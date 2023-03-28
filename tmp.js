@@ -18,66 +18,53 @@ const body = {
     "engine": "new"
 }
 
-
-class TradeQuery {
-    constructor(){
-        return null;
+const props = {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+        "Content-Type": "application/json"
     }
+}
 
-    /**@param { TradeQuery } self */
-    static setReady(self) { self.#ready = true; }
-
-    /**@type { [URL, RequestInit, (value: any) => void, (value: any) => void][] } */
-    static #queue = [];
-
-    static async *#iter(){
-        while (true) {
-            
-        }
-    }
-
-    static #ready = true;
-
+const R = {
+    /**@type { [URL, RequestInit, (reason?: any) => void, (reason?: any) => void][] } */
+    queue: [],
+    running: false,
+    /**@type { ReturnType<requestGen> } */
+    queueProcessor: undefined,
     /**
      * @param { URL } url 
      * @param { RequestInit } props 
+     * @returns 
      */
-    static call(url, props){
-        const result = new Promise((reject, resolve) => {
-            this.#queue.push([url, props, resolve, reject]);
+    call(url, props) {
+        const resp = new Promise((resolve, reject)=>{
+            this.queue.push([url, props, resolve, reject]);
         });
-        //if (this.#ready) this.next();
-        return result;
-    }
-
-    static async next() {
-        if (this.#queue.length <= 0) return;
-        if (!this.#ready) return;
-        this.#ready = false;
-
-        const [url, props, resolve, reject] = this.#queue.shift();
-        let /**@type { any } */ data, /**@type { Response } */ resp;
-        try {
-            resp = await fetch(url, props);
-            data = await resp.json();
-        } catch (error) {
-            reject(error);
-            return;
+        if (!this.running) {
+            this.running = true;
+            this.run();
         }
+        return resp;
+    },
 
-        const rules = parseRules(resp);
-        const delay = Math.ceil(computeDelay(rules) * 1000 * 1.05);
-        setTimeout(TradeQuery.setReady, delay, this);
-        
-        resolve(data);
+    async run(){
+        for await (const done of this.queueProcessor) {
+            if (done) {
+                this.running = false;
+                return;
+            }
+        }
     }
 }
+R.queueProcessor = requestGen(R);
 
 
-const iter = makeRequest();
-for await (const data of iter) {
-    console.log(data);
+while (true) {
+    const resp = await R.call(url, props);
+    console.log(resp);
 }
+
 
 async function* makeRequest(){
     let /**@type { URL } */ url, /**@type { RequestInit } */ props;
@@ -95,8 +82,45 @@ async function* makeRequest(){
         const delay = Math.ceil(computeDelay(rules) * 1000 * 1.05);
         console.log(rules);
         console.log(delay);
+        const T = timeout(delay);
         yield data;
-        await timeout(delay);
+        await T;
+    }
+}
+
+/**
+ * @param { { queue: [URL, RequestInit, (reason?: any) => void, (reason?: any) => void][] } } self 
+ */
+async function* requestGen(self){
+    while (true) {
+
+        if (self.queue.length <= 0) {
+            yield true;
+            continue;
+        }
+
+        const [url, props, resolve, reject] = self.queue.shift();
+        let /**@type { Response } */ resp, /**@type { any } */ data;
+
+        try {
+            resp = await fetch(url, props);
+            data = await resp.json();
+        } catch (error) {
+            reject(error);
+            yield false;
+            continue;
+        }
+    
+        const rules = parseRules(resp);
+        const delay = Math.ceil(computeDelay(rules) * 1000 * 1.05);
+        console.log(rules);
+        console.log(delay);
+        const T = timeout(delay);
+
+        resolve(data);
+
+        yield false;
+        await T;
     }
 }
 
