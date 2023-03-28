@@ -1,4 +1,8 @@
+/** @typedef { { [rule: string]: { maxHits: number, currentHits: number, maxRestrict: number, currentRestrict: number period: number }[] } } Rulse */
+
+
 const url = new URL("https://www.pathofexile.com/api/trade/exchange/Standard");
+
 
 const body = {
     "query": {
@@ -27,10 +31,17 @@ const props = {
 }
 
 const R = {
-    /**@type { [URL, RequestInit, (reason?: any) => void, (reason?: any) => void][] } */
+    /**
+     * @private
+     * @type { [URL, RequestInit, (reason?: any) => void, (reason?: any) => void][] }
+     */
     queue: [],
+    /**@private */
     running: false,
-    /**@type { ReturnType<requestGen> } */
+    /**
+     * @private
+     * @type { ReturnType<requestGen> }
+     */
     queueProcessor: undefined,
     /**
      * @param { URL } url 
@@ -47,7 +58,9 @@ const R = {
         }
         return resp;
     },
-
+    /**
+     * @private
+     */
     async run(){
         for await (const done of this.queueProcessor) {
             if (done) {
@@ -58,35 +71,6 @@ const R = {
     }
 }
 R.queueProcessor = requestGen(R);
-
-
-while (true) {
-    const resp = await R.call(url, props);
-    console.log(resp);
-}
-
-
-async function* makeRequest(){
-    let /**@type { URL } */ url, /**@type { RequestInit } */ props;
-    while (true) {
-        const resp = await fetch(url, {
-            method: "POST",
-            body: JSON.stringify(body),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        const data = await resp.json();
-    
-        const rules = parseRules(resp);
-        const delay = Math.ceil(computeDelay(rules) * 1000 * 1.05);
-        console.log(rules);
-        console.log(delay);
-        const T = timeout(delay);
-        yield data;
-        await T;
-    }
-}
 
 /**
  * @param { { queue: [URL, RequestInit, (reason?: any) => void, (reason?: any) => void][] } } self 
@@ -113,8 +97,8 @@ async function* requestGen(self){
     
         const rules = parseRules(resp);
         const delay = Math.ceil(computeDelay(rules) * 1000 * 1.05);
-        console.log(rules);
-        console.log(delay);
+        //console.log(rules);
+        //console.log(delay);
         const T = timeout(delay);
 
         resolve(data);
@@ -129,12 +113,6 @@ function timeout(timeout) {
         setTimeout(resolve, timeout);
     })
 }
-
-
-
-/** @typedef { { [rule: string]: { maxHits: number, currentHits: number, maxRestrict: number, currentRestrict: number period: number }[] } } Rulse */
-
-
 
 /**
  * @param { Response } resp
@@ -170,7 +148,6 @@ function parseRules(resp) {
     return result;
 }
 
-
 /**
  * @param { Rulse } data 
  */
@@ -184,4 +161,15 @@ function computeDelay(data) {
         }
     }
     return result;
+}
+
+
+
+
+
+
+
+while (true) {
+    const resp = await R.call(url, props);
+    console.log(resp);
 }
