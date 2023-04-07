@@ -1,6 +1,7 @@
 /**
- * @typedef { {self: SVGLineElement, x1: SVGAnimateElement, x2: SVGAnimateElement, y1: SVGAnimateElement, y2: SVGAnimateElement, values: {x1: number, x2: number, y1: number, y2: number}, represents: number} } Segment
- * @typedef { {self: SVGCircleElement, cx: SVGAnimateElement, cy: SVGAnimateElement, values: { cx: number, cy: number }, represents: number} } Vertex
+ * @typedef { {self: SVGLineElement, x1: SVGAnimateElement, x2: SVGAnimateElement, y1: SVGAnimateElement, y2: SVGAnimateElement, values: {x1: number, x2: number, y1: number, y2: number}, represents?: number} } Segment
+ * @typedef { {self: SVGCircleElement, cx: SVGAnimateElement, cy: SVGAnimateElement, values: { cx: number, cy: number }, represents?: number} } Vertex
+ * @typedef { {self: SVGTextElement, x: SVGAnimateElement, y: SVGAnimateElement, text: SVGTSpanElement, values: {x: number, y: number}, represents?: number} } Label
 */
 
 const style = new CSSStyleSheet();
@@ -20,9 +21,15 @@ style.replaceSync(
         r: var(--r, 4);
         fill: var(--vertex-color, #0074d9);
     }
+    svg text {
+        transform: scale(-1, -1);
+        transform-origin: center center;
+        transform-box: fill-box;
+        fill: white;
+    }
     :host(*) {
-        height: 100px;
-        width: 100px;
+        min-height: 100px;
+        min-width: 100px;
         position: relative;
         overflow: hidden;
         display: block;
@@ -30,23 +37,25 @@ style.replaceSync(
 );
 
 const template = document.createRange().createContextualFragment(
-    `<svg transform="scale(-1, -1)" transform-origin="center" viewBox="0 0 1000 500" style="position: absolute;bottom: 0;right: 0;height: 100%;">
+    `<svg transform="scale(-1, -1)" transform-origin="center" viewBox="0 0 1000 500">
         <g id="segments"></g>
-        <g id="vertices">
-            <!--<circle cx="60" cy="60" r="50"/-->
-        </g>
+        <g id="vertices"></g>
+        <g id="labels"></g>
     </svg>`
 );
 
 
 class SVGChart extends HTMLElement {
-    constructor(){
+    constructor() {
         super();
-        this.#shadow = this.attachShadow({mode: "closed"});
+        this.#shadow = this.attachShadow({ mode: "closed" });
         this.#shadow.append(template.cloneNode(true));
+
         this.#svg = this.#shadow.querySelector("svg");
+
         this.#segmentsContainer = this.#svg.getElementById("segments");
         this.#verticesContainer = this.#svg.getElementById("vertices");
+        this.#labelsContainer = this.#svg.getElementById("labels");
 
         this.#shadow.adoptedStyleSheets = [style];
         SVGChart.observer.observe(this);
@@ -63,14 +72,19 @@ class SVGChart extends HTMLElement {
         })();
     }
     #shadow;
+
     #svg;
+
     #segmentsContainer;
     #verticesContainer;
+    #labelsContainer;
 
     /**@type { Segment[] } */
     #segments = [];
     /**@type { Vertex[] } */
     #vertices = [];
+    /**@type { Label[] } */
+    #labels = [];
 
     #props = {
         length: 10,
@@ -98,7 +112,7 @@ class SVGChart extends HTMLElement {
         }
     }
 
-    updateElements(){
+    updateElements() {
         const predictedLength = (this.#props.length + 1);
         if (this.#props.values.length > predictedLength) {
             this.#props.values.length = predictedLength;
@@ -106,9 +120,40 @@ class SVGChart extends HTMLElement {
 
         this.updateSegments();
         this.updateVertices();
+        this.updateLabels();
     }
 
-    updateVertices(){
+    updateLabels() {
+        //remove excess
+        while (this.#labels.length - this.#props.length > 1) {
+            const vertex = this.#labels.pop();
+            vertex.self.remove();
+        }
+        //add new
+        while (this.#labels.length - this.#props.length < 2) {
+            const self = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+            /**@type { Label } */
+            const vertex = {
+                self,
+                x: createAnimateElement("x", self),
+                y: createAnimateElement("y", self),
+                text,
+                values: {
+                    x: 0,
+                    y: 0
+                }
+            }
+            self.setAttribute("x", 0)
+            self.setAttribute("y", 0)
+            self.append(text);
+
+            this.#labels.push(vertex)
+            this.#labelsContainer.append(self);
+        }
+    }
+
+    updateVertices() {
         //remove excess
         while (this.#vertices.length - this.#props.length > 1) {
             const vertex = this.#vertices.pop();
@@ -127,13 +172,15 @@ class SVGChart extends HTMLElement {
                     cy: 0
                 }
             }
+            self.setAttribute("cx", 0)
+            self.setAttribute("cy", 0)
 
             this.#vertices.push(vertex)
             this.#verticesContainer.append(self);
         }
     }
 
-    updateSegments(){
+    updateSegments() {
         //remove excess
         while (this.#segments.length > this.#props.length) {
             const segment = this.#segments.pop();
@@ -154,13 +201,12 @@ class SVGChart extends HTMLElement {
                     x2: 0,
                     y1: 0,
                     y2: 0
-                },
-                represents: 0
+                }
             };
-            self.setAttribute( "x1", 0)
-            self.setAttribute( "x2", 0)
-            self.setAttribute( "y1", 0)
-            self.setAttribute( "y2", 0)
+            self.setAttribute("x1", 0)
+            self.setAttribute("x2", 0)
+            self.setAttribute("y1", 0)
+            self.setAttribute("y2", 0)
 
             this.#segments.push(segment)
             this.#segmentsContainer.append(self);
@@ -170,7 +216,7 @@ class SVGChart extends HTMLElement {
     /**@type {Generator<void, void, void>} */
     #draw = SVGChart.drawer(this);
 
-    static observer = new ResizeObserver((entries)=>{
+    static observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
             /**@type { { target: SVGChart} } */
             const { target } = entry;
@@ -184,7 +230,7 @@ class SVGChart extends HTMLElement {
 
             target.#props.length = width / target.#props.stepSize;
             target.updateElements();
-            
+
             target.#svg.setAttribute("viewBox", `0 0 ${target.#props.width} ${target.#props.height}`);
         }
     });
@@ -210,11 +256,31 @@ class SVGChart extends HTMLElement {
 
             const segmentIter = self.#segments[Symbol.iterator]();
             const vertexIter = self.#vertices[Symbol.iterator]();
+            const labelIter = self.#labels[Symbol.iterator]();
+
             for (const value of self.#props.values) {
                 x1 = x2;
                 y1 = y2;
                 x2 = (i++ * wu) + self.#props.padding.width;
                 y2 = ((value - min) * hu) + self.#props.padding.height;
+
+                /**@type { {value: Label} } */
+                const { value: label } = labelIter.next();
+                if (label != undefined) {
+                    label.x.setAttribute("from", label.values.x);
+                    label.x.setAttribute("to", x2);
+                    label.self.setAttribute("x", x2);
+                    label.values.x = x2;
+
+                    label.y.setAttribute("from", label.values.y);
+                    label.y.setAttribute("to", y2);
+                    label.self.setAttribute("y", y2);
+                    label.values.y = y2;
+
+                    label.text.textContent = value;
+                } else {
+                    console.error("label not found");
+                }
 
                 /**@type { {value: Vertex} } */
                 const { value: vertex } = vertexIter.next();
@@ -232,7 +298,7 @@ class SVGChart extends HTMLElement {
                     console.error("vertex not found");
                 }
 
-                if ( (x1 != null && x2 != null) && (y1 != null && y2 != null) ) {
+                if ((x1 != null && x2 != null) && (y1 != null && y2 != null)) {
                     /**@type { {value: Segment} } */
                     const { value: segment } = segmentIter.next();
                     if (segment != undefined) {
@@ -240,23 +306,22 @@ class SVGChart extends HTMLElement {
                         segment.x1.setAttribute("to", x1);
                         segment.self.setAttribute("x1", x1);
                         segment.values.x1 = x1;
-            
+
                         segment.x2.setAttribute("from", segment.values.x2);
                         segment.x2.setAttribute("to", x2);
                         segment.self.setAttribute("x2", x2);
                         segment.values.x2 = x2;
-            
+
                         segment.y1.setAttribute("from", segment.values.y1);
                         segment.y1.setAttribute("to", y1);
                         segment.self.setAttribute("y1", y1);
                         segment.values.y1 = y1;
-            
+
                         segment.y2.setAttribute("from", segment.values.y2);
                         segment.y2.setAttribute("to", y2);
                         segment.self.setAttribute("y2", y2);
                         segment.values.y2 = y2;
-    
-                        segment.represents = value;
+
                     } else {
                         console.error("segment not found");
                     }
@@ -273,36 +338,48 @@ class SVGChart extends HTMLElement {
                 vertex.cx.beginElement()
                 vertex.cy.beginElement()
             }
+            for (const label of self.#labels) {
+                label.x.beginElement()
+                label.y.beginElement()
+            }
 
             yield 0;
 
             const first = self.#segments[0];
             const last = self.#segments.at(-1);
             const lastVertex = self.#vertices.at(-1);
+            const lastLabel = self.#labels.at(-1);
 
             last.values.x1 = -wu + self.#props.padding.width;
             last.self.setAttribute("x1", last.values.x1)
             last.values.x2 = self.#props.padding.width;
             last.self.setAttribute("x2", last.values.x2)
-            
+
             lastVertex.values.cx = last.values.x1;
             lastVertex.self.setAttribute("cx", lastVertex.values.cx);
             
+            lastLabel.values.x = last.values.x1;
+            lastLabel.self.setAttribute("x", lastLabel.values.x);
+
             last.values.y1 = ((self.#props.values[0] - min) * hu) + self.#props.padding.height;
             last.self.setAttribute("y1", last.values.y1);
             last.values.y2 = first.values.y1;
             last.self.setAttribute("y2", last.values.y2);
-            
+
             lastVertex.values.cy = last.values.y1
             lastVertex.self.setAttribute("cy", lastVertex.values.cy);
 
+            lastLabel.values.y = last.values.y1;
+            lastLabel.self.setAttribute("y", lastLabel.values.y);
+
             self.#segments.unshift(self.#segments.pop());
             self.#vertices.unshift(self.#vertices.pop());
+            self.#labels.unshift(self.#labels.pop());
         }
     }
 }
 
-function createAnimateElement(attr, parent){
+function createAnimateElement(attr, parent) {
     const elem = document.createElementNS("http://www.w3.org/2000/svg", "animate");
     elem.setAttribute("attributeName", attr);
     elem.setAttribute("repeatCount", "1");
@@ -322,7 +399,7 @@ function timeout(timeout) {
     })
 }
 
-async function* gen(){
+async function* gen() {
     const values = [10, 0, 15, 100, 7, 40, 3, 11, 12, 12, 20, 8, 4, 3];
     while (true) {
         for (const value of values) {

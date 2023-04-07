@@ -5,6 +5,8 @@ const GridStack = window["GridStack"];
 /**@type { import("fluent-reveal-effect") } */
 const { applyEffect } = window["fluent-reveal-effect"];
 
+import "./graph.js";
+
 
 const grid = GridStack.init({
     column: 12,
@@ -19,9 +21,9 @@ const grid = GridStack.init({
 grid.float(true);
 
 const widgets = [
-    grid.addWidget({ w:2, h: 2, content: `<div class="item-border"><div class="item-container">Button 1</div></div>`}),
-    grid.addWidget({ w:2, h: 2, content: `<div class="item-border"><div class="item-container">Button 2</div></div>`}),
-    grid.addWidget({ w:2, h: 2, content: `<div class="item-border"><div class="item-container">Button 3</div></div>`})
+    grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`}),
+    grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`}),
+    grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`})
 ];
 
 /*
