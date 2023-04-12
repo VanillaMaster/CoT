@@ -1,11 +1,29 @@
 import './node_modules/gridstack/dist/gridstack-all.js';
 import "./node_modules/fluent-reveal-effect/dist/main.js"
-/**@type { import("gridstack")["GridStack"] } */
+/**@type { import("./node_modules/gridstack/dist/gridstack")["GridStack"] } */
 const GridStack = window["GridStack"];
 /**@type { import("fluent-reveal-effect") } */
 const { applyEffect } = window["fluent-reveal-effect"];
 
 import "./graph.js";
+import { init } from "./src/context.js";
+
+function timeout(timeout) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, timeout);
+    })
+}
+
+async function* gen() {
+    const values = [10, 0, 15, 100, 7, 40, 3, 11, 12, 12, 20, 8, 4, 3];
+    while (true) {
+        for (const value of values) {
+            const T = timeout(750);
+            yield value
+            await T;
+        };
+    }
+}
 
 
 const grid = GridStack.init({
@@ -20,11 +38,30 @@ const grid = GridStack.init({
 
 grid.float(true);
 
+const container = document.createElement("div");
+const wrapper = document.createElement("div");
+wrapper.classList.add("grid-stack-item-content");
+/**@type { SVGChart } */
+const chart = document.createElement("svg-chart");
+
+chart.style.position = "absolute";
+chart.style.inset = "4px";
+chart.style.backgroundColor = "#333";
+
+wrapper.append(chart);
+container.append(wrapper);
+
+chart.setSource(gen());
+
 const widgets = [
     grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`}),
     grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`}),
-    grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`})
+    grid.addWidget(container, { w:2, h: 2})
 ];
+
+chart.start();
+
+init();
 
 /*
 applyEffect('.grid', {
@@ -40,4 +77,3 @@ applyEffect('.grid', {
     }
 })
 */
-console.log(widgets);

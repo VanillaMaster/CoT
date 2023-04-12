@@ -59,17 +59,10 @@ class SVGChart extends HTMLElement {
 
         this.#shadow.adoptedStyleSheets = [style];
         SVGChart.observer.observe(this);
-
-        const g = gen();
-        (async () => {
-            for await (const v of g) {
-                if (window.dbg === true) {
-                    this.#draw.next();
-                } else {
-                    this.push(v);
-                };
-            }
-        })();
+    }
+    disconnectedCallback(){
+        SVGChart.observer.unobserve(this);
+        this.stop();
     }
     #shadow;
 
@@ -85,6 +78,8 @@ class SVGChart extends HTMLElement {
     #vertices = [];
     /**@type { Label[] } */
     #labels = [];
+    /**@type {AsyncGenerator<number, void, void>} */
+    #gen;
 
     #props = {
         length: 10,
@@ -102,6 +97,37 @@ class SVGChart extends HTMLElement {
         },
     }
 
+    /**
+     * @param {AsyncGenerator<number, void, void>} generator 
+     */
+    setSource(generator){
+        this.#gen = generator;
+    }
+
+    /**@private */
+    async run(){
+        while (this.#props.working) {
+            const { value: next } = await this.#gen.next()
+            this.push(next);
+        }
+        /*
+        for await (const next of this.#gen) {
+            if (this.#props.working == false) { break; }
+        }
+        */
+    }
+
+    start(){
+        if (this.#props.working) return false;
+        this.#props.working = true;
+        this.run();
+        return true;
+    }
+    stop(){
+        this.#props.working = false;
+    }
+
+    /**@private */
     push(value) {
         this.#props.values.unshift(value);
         if (this.#props.values.length - this.#props.length > 2) {
@@ -123,6 +149,7 @@ class SVGChart extends HTMLElement {
         this.updateLabels();
     }
 
+    /**@private */
     updateLabels() {
         //remove excess
         while (this.#labels.length - this.#props.length > 1) {
@@ -153,6 +180,7 @@ class SVGChart extends HTMLElement {
         }
     }
 
+    /**@private */
     updateVertices() {
         //remove excess
         while (this.#vertices.length - this.#props.length > 1) {
@@ -180,6 +208,7 @@ class SVGChart extends HTMLElement {
         }
     }
 
+    /**@private */
     updateSegments() {
         //remove excess
         while (this.#segments.length > this.#props.length) {
@@ -391,21 +420,3 @@ function createAnimateElement(attr, parent) {
 }
 
 customElements.define("svg-chart", SVGChart);
-
-
-function timeout(timeout) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, timeout);
-    })
-}
-
-async function* gen() {
-    const values = [10, 0, 15, 100, 7, 40, 3, 11, 12, 12, 20, 8, 4, 3];
-    while (true) {
-        for (const value of values) {
-            const T = timeout(750);
-            yield value
-            await T;
-        };
-    }
-}
