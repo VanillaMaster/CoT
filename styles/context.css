@@ -47,6 +47,7 @@
 #menu button {
     flex-grow: 1;
     font-size: inherit;
+    font-family: inherit;
     color: #d8d9d9;
 
     margin: 0;

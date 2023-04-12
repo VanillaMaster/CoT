@@ -61,7 +61,7 @@ const widgets = [
 
 chart.start();
 
-init();
+init(widgets);
 
 /*
 applyEffect('.grid', {
