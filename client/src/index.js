@@ -1,12 +1,12 @@
-import './node_modules/gridstack/dist/gridstack-all.js';
-import "./node_modules/fluent-reveal-effect/dist/main.js"
-/**@type { import("./node_modules/gridstack/dist/gridstack")["GridStack"] } */
+import '../node_modules/gridstack/dist/gridstack-all.js';
+import "../node_modules/fluent-reveal-effect/dist/main.js"
+/**@type { import("./client/node_modules/gridstack/dist/gridstack")["GridStack"] } */
 const GridStack = window["GridStack"];
 /**@type { import("fluent-reveal-effect") } */
 const { applyEffect } = window["fluent-reveal-effect"];
 
 import "./graph.js";
-import { init } from "./src/context.js";
+import { init } from "./context.js";
 
 function timeout(timeout) {
     return new Promise((resolve) => {

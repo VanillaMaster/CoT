@@ -1,0 +1,1 @@
+const origin = window.fetch;
