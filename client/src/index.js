@@ -2,7 +2,7 @@ import { GridStack } from "./GridStack.js";
 import { applyEffect } from "./FluentRevealEffect.js"
 
 import "../../proxy/src/patch.js";
-import "../tests/tmp.js"
+//import "../tests/tmp.js"
 
 import "./graph.js";
 import { init } from "./context.js";

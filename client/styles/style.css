@@ -16,10 +16,19 @@ body {
 .grid {
 
     width: 100%; 
-    background-color: #282828;
+    /*background-color: #282828;*/
 
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(6, 1fr);
+}
+
+.grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-color: #282828;
+    filter: url(#noise);
 }
 
 .grid-stack-item-content{

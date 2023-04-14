@@ -7,6 +7,12 @@
     
     top: var(--y, 0);
     left: var(--x, 0);
+
+    isolation: isolate;
+
+    border-width: 1px 0 0 0;
+    border-color: #1c1c1c;
+    border-style: solid;
 }
 
 #menu:not([visible]){
@@ -25,10 +31,21 @@
     padding-left: 0;
     padding-right: 0;
 
-    background-color: #282828;
-    border: 1px solid #1c1c1c;
+    border-width: 0 1px 1px 1px;
+    border-color: #1c1c1c;
+    border-style: solid;
 
     animation: slide 250ms;
+}
+
+#menu ul::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-color: #282828;
+    filter: url(#noise);
+    z-index: -1;
 }
 
 #menu li{
