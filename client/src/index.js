@@ -1,9 +1,8 @@
-import '../node_modules/gridstack/dist/gridstack-all.js';
-import "../node_modules/fluent-reveal-effect/dist/main.js"
-/**@type { import("./client/node_modules/gridstack/dist/gridstack")["GridStack"] } */
-const GridStack = window["GridStack"];
-/**@type { import("fluent-reveal-effect") } */
-const { applyEffect } = window["fluent-reveal-effect"];
+import { GridStack } from "./GridStack.js";
+import { applyEffect } from "./FluentRevealEffect.js"
+
+import "../../proxy/src/patch.js";
+import "../tests/tmp.js"
 
 import "./graph.js";
 import { init } from "./context.js";

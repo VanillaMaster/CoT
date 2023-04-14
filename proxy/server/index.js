@@ -5,6 +5,12 @@ const server = createServer();
 server.on('request', async (serverReq, serverRes) => {
     const { method, url, headers } = serverReq;
     const {"x-host": host = null} = headers;
+
+    serverRes.setHeader("Access-Control-Allow-Origin", "*");
+    serverRes.setHeader("Access-Control-Allow-Methods", "*");
+    serverRes.setHeader("Access-Control-Allow-Headers", "*");
+    console.log(1);
+
     if (host == null) {
         serverRes.end();
         return;

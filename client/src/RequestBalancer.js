@@ -17,7 +17,7 @@ export class RequestBalancer {
     fetch(input, init = {}){
         /**@type {Promise<Response>} */
         const resp = new Promise((resolve, reject)=>{
-            this.#queue.push([input, init, resolve, reject]);
+            this.#queue.push([input, {...init, proxy: true}, resolve, reject]);
         });
         if (!this.#running) {
             this.#running = true;
