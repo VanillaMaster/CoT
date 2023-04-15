@@ -1,13 +1,15 @@
 import "../graph.js";
+import { translation } from "../lang.js";
+
 const grid = document.querySelector(".grid");
 
 const chartWidgetContextMenu = document.createRange().createContextualFragment(`
 <div class="menu">
     <ul>
-        <li><button data-name="edit">Edit</button></li>
-        <li><button data-name="delete">Delete</button></li>
+        <li><button data-name="edit">${translation["widget.chart.contextmenu.edit"]}</button></li>
+        <li><button data-name="delete">${translation["widget.chart.contextmenu.delete"]}</button></li>
         <hr noshade>
-        <li data-name="hide"><button>hide</button></li>
+        <li data-name="hide"><button>${translation["widget.chart.contextmenu.hide"]}</button></li>
     </ul>
 </div>
 `);

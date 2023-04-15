@@ -1,0 +1,7 @@
+{
+    "grid.contextmenu.edit": "Edit",
+
+    "widget.chart.contextmenu.edit": "Edit",
+    "widget.chart.contextmenu.delete": "Delete",
+    "widget.chart.contextmenu.hide": "Hide"
+}

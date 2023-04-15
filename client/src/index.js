@@ -1,6 +1,8 @@
 import { GridStack } from "./GridStack.js";
 import { applyEffect } from "./FluentRevealEffect.js"
 
+import { translation } from "./lang.js";
+
 import "../../proxy/src/patch.js";
 //import "../tests/tmp.js"
 
@@ -17,7 +19,7 @@ document.addEventListener("contextmenu", function(e) {
     const contextMenu = document.createRange().createContextualFragment(`
     <div class="menu">
         <ul>
-            <li><button data-name="edit">Edit</button></li>
+            <li><button data-name="edit">${translation["grid.contextmenu.edit"]}</button></li>
         </ul>
     </div>
     `);
@@ -38,7 +40,7 @@ document.addEventListener("contextmenu", function(e) {
     grid.addEventListener("contextmenu", function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const { clientX: x, clientY: y } = e;
         menu.style.setProperty("--x", `${x}px`);
         menu.style.setProperty("--y", `${y}px`);
