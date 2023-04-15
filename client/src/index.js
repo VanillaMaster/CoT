@@ -4,26 +4,52 @@ import { applyEffect } from "./FluentRevealEffect.js"
 import "../../proxy/src/patch.js";
 //import "../tests/tmp.js"
 
-import "./graph.js";
-import { init } from "./context.js";
+import { createChartWidget } from "./widgets/ChartWidget.js";
+import { gen } from "../tests/gen.js";
 
-function timeout(timeout) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, timeout);
+document.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
+});
+
+{
+    const grid = document.querySelector(".grid");
+
+    const contextMenu = document.createRange().createContextualFragment(`
+    <div class="menu">
+        <ul>
+            <li><button data-name="edit">Edit</button></li>
+        </ul>
+    </div>
+    `);
+    const menu = contextMenu.querySelector(".menu");
+    const btn = /**@type { const } */ ({
+        /**@type { HTMLButtonElement }*/
+        edit: contextMenu.querySelector(`[data-name="edit"]`)
+    });
+    document.body.append(contextMenu);
+
+    menu.addEventListener("pointerdown", function(e) {
+        e.stopPropagation();
+    });
+    document.addEventListener("pointerdown", function(e) {
+        menu.removeAttribute("visible");
+    });
+
+    grid.addEventListener("contextmenu", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const { clientX: x, clientY: y } = e;
+        menu.style.setProperty("--x", `${x}px`);
+        menu.style.setProperty("--y", `${y}px`);
+
+        menu.removeAttribute("visible");
+        requestAnimationFrame(()=>{
+            menu.setAttribute("visible","")
+        })
     })
-}
 
-async function* gen() {
-    const values = [10, 0, 15, 100, 7, 40, 3, 11, 12, 12, 20, 8, 4, 3];
-    while (true) {
-        for (const value of values) {
-            const T = timeout(750);
-            yield value
-            await T;
-        };
-    }
 }
-
 
 const grid = GridStack.init({
     column: 12,
@@ -34,33 +60,11 @@ const grid = GridStack.init({
     float: true
 });
 
-
-grid.float(true);
-
-const container = document.createElement("div");
-const wrapper = document.createElement("div");
-wrapper.classList.add("grid-stack-item-content");
-/**@type { SVGChart } */
-const chart = document.createElement("svg-chart");
-
-chart.style.position = "absolute";
-chart.style.inset = "4px";
-chart.style.backgroundColor = "#333";
-
-wrapper.append(chart);
-container.append(wrapper);
-
-chart.setSource(gen());
-
-const widgets = [
-    grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`}),
-    grid.addWidget({ w:2, h: 2, content: `<svg-chart style="position: absolute;inset: 4px;background-color: #333;"></svg-chart>`}),
-    grid.addWidget(container, { w:2, h: 2})
-];
-
-chart.start();
-
-init(widgets);
+const length = 3;
+const widgets = new Array(length);
+for (let i = 0; i < length; i++) {
+    widgets[i] = createChartWidget(grid, gen(), { w:2, h: 2});
+}
 
 /*
 applyEffect('.grid', {

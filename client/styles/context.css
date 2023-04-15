@@ -1,4 +1,4 @@
-#menu {
+.menu {
     font-size: 14px;
     z-index: 101;
     
@@ -15,15 +15,15 @@
     border-style: solid;
 }
 
-#menu:not([visible]){
+.menu:not([visible]){
     display: none;
 }
-#menu[visible] {
+.menu[visible] {
     display: block;
 }
 
 
-#menu ul{
+.menu ul{
     list-style: none;
     margin: 0;
     padding-top: 0.25em;
@@ -38,7 +38,7 @@
     animation: slide 250ms;
 }
 
-#menu ul::before {
+.menu ul::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -48,11 +48,11 @@
     z-index: -1;
 }
 
-#menu li{
+.menu li{
     display: flex;
 }
 
-#menu hr{
+.menu hr{
     border-color: #d8d9d9;
     margin-left: 0.5em;
     margin-right: 0.5em;
@@ -61,7 +61,7 @@
     margin-bottom: 0.25em;
 }
 
-#menu button {
+.menu button {
     flex-grow: 1;
     font-size: inherit;
     font-family: inherit;
@@ -79,7 +79,7 @@
     padding-bottom: 0.25em;
 }
 
-#menu button:hover {
+.menu button:hover {
     background-color: rgba(255, 255, 255, 0.2)
 }
 

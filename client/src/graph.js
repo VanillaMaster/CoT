@@ -58,6 +58,8 @@ class SVGChart extends HTMLElement {
         this.#labelsContainer = this.#svg.getElementById("labels");
 
         this.#shadow.adoptedStyleSheets = [style];
+    }
+    connectedCallback(){
         SVGChart.observer.observe(this);
     }
     disconnectedCallback(){
