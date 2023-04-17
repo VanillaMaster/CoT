@@ -1,58 +1,13 @@
-.menu {
-    font-size: 14px;
-    z-index: 101;
-    
-    overflow: hidden;
-    position: absolute;
-    
-    top: var(--y, 0);
-    left: var(--x, 0);
-
-    isolation: isolate;
-
-    border-width: 1px 0 0 0;
-    border-color: #1c1c1c;
-    border-style: solid;
-}
-
-.menu:not([visible]){
-    display: none;
-}
-.menu[visible] {
-    display: block;
-}
-
-
-.menu ul{
+.context-menu-list {
     list-style: none;
     margin: 0;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
     padding-left: 0;
     padding-right: 0;
-
-    border-width: 0 1px 1px 1px;
-    border-color: #1c1c1c;
-    border-style: solid;
-
-    animation: slide 250ms;
 }
 
-.menu ul::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    background-color: #282828;
-    filter: url(#noise);
-    z-index: -1;
-}
-
-.menu li{
-    display: flex;
-}
-
-.menu hr{
+.context-menu-list hr{
     border-color: #d8d9d9;
     margin-left: 0.5em;
     margin-right: 0.5em;
@@ -61,7 +16,15 @@
     margin-bottom: 0.25em;
 }
 
-.menu button {
+.context-menu-list li{
+    display: flex;
+}
+
+.context-menu-list li>*{
+    flex-grow: 1;
+}
+
+.context-menu-list button {
     flex-grow: 1;
     font-size: inherit;
     font-family: inherit;
@@ -79,19 +42,6 @@
     padding-bottom: 0.25em;
 }
 
-.menu button:hover {
+.context-menu-list button:hover {
     background-color: rgba(255, 255, 255, 0.2)
-}
-
-@keyframes slide {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-
-    25% {
-        opacity: 1;
-    }
-    
-    to {}
 }

@@ -1,25 +1,18 @@
 import "../graph.js";
 import { translation } from "../lang.js";
 
-const grid = document.querySelector(".grid");
-
 const chartWidgetContextMenu = document.createRange().createContextualFragment(`
-<div class="menu">
-    <ul>
+    <ul class="context-menu-list">
         <li><button data-name="edit">${translation["widget.chart.contextmenu.edit"]}</button></li>
         <li><button data-name="delete">${translation["widget.chart.contextmenu.delete"]}</button></li>
         <hr noshade>
         <li data-name="hide"><button>${translation["widget.chart.contextmenu.hide"]}</button></li>
     </ul>
-</div>
 `);
-
-const menu = chartWidgetContextMenu.querySelector(".menu");
 const btn = /**@type { const } */ ({
     /**@type { HTMLButtonElement }*/
-    delete: menu.querySelector(`[data-name="delete"]`)
+    delete: chartWidgetContextMenu.querySelector(`[data-name="delete"]`)
 });
-document.body.append(chartWidgetContextMenu);
 
 
 const chartWidgetTemplate = document.createRange().createContextualFragment(`
@@ -34,14 +27,8 @@ let target = null;
 
 btn.delete.addEventListener("click", function(e) {
     target.remove();
-    menu.removeAttribute("visible");
+    window.modules.contextMenuProvider.close();
 })
-menu.addEventListener("pointerdown", function(e) {
-    e.stopPropagation();
-});
-document.addEventListener("pointerdown", function(e) {
-    menu.removeAttribute("visible");
-});
 
 /**
  * 
@@ -60,18 +47,13 @@ export function createChartWidget(grid, source, opts) {
     const element = grid.addWidget(widget.children[0], opts);
 
     const content = element.querySelector(".grid-stack-item-content");
+
     content.addEventListener("contextmenu", function(e) {
         target = element;
         e.preventDefault();
         e.stopPropagation();
         const { clientX: x, clientY: y } = e;
-        menu.style.setProperty("--x", `${x}px`);
-        menu.style.setProperty("--y", `${y}px`);
-
-        menu.removeAttribute("visible");
-        requestAnimationFrame(()=>{
-            menu.setAttribute("visible","")
-        })
+        window.modules.contextMenuProvider.show(chartWidgetContextMenu, x, y)
     })
 
     return element;

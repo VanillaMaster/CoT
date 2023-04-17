@@ -21,38 +21,21 @@ document.addEventListener("contextmenu", function(e) {
     const grid = document.querySelector(".grid");
 
     const contextMenu = document.createRange().createContextualFragment(`
-    <div class="menu">
-        <ul>
+        <ul class="context-menu-list">
             <li><button data-name="edit">${translation["grid.contextmenu.edit"]}</button></li>
         </ul>
-    </div>
     `);
-    const menu = contextMenu.querySelector(".menu");
+    
     const btn = /**@type { const } */ ({
         /**@type { HTMLButtonElement }*/
         edit: contextMenu.querySelector(`[data-name="edit"]`)
-    });
-    document.body.append(contextMenu);
-
-    menu.addEventListener("pointerdown", function(e) {
-        e.stopPropagation();
-    });
-    document.addEventListener("pointerdown", function(e) {
-        menu.removeAttribute("visible");
     });
 
     grid.addEventListener("contextmenu", function(e) {
         e.preventDefault();
         e.stopPropagation();
-
         const { clientX: x, clientY: y } = e;
-        menu.style.setProperty("--x", `${x}px`);
-        menu.style.setProperty("--y", `${y}px`);
-
-        menu.removeAttribute("visible");
-        requestAnimationFrame(()=>{
-            menu.setAttribute("visible","")
-        })
+        window.modules.contextMenuProvider.show(contextMenu, x, y);
     })
 
 }
