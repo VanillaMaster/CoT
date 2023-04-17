@@ -1,3 +1,7 @@
+import "./moduleLoader/loader.js"
+
+
+
 import { GridStack } from "./GridStack.js";
 import { applyEffect } from "./FluentRevealEffect.js"
 
