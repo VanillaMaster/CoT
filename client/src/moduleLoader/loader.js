@@ -45,6 +45,9 @@ const moduleDataPromise = Promise.all(
     modulesPaths.map(location => getModuleInfo(location))
 );
 
+/**@type { Promise<void>[] } */
+const asyncTasks = [];
+
 {
 
     /**@type {ModuleContainer} */
@@ -58,6 +61,14 @@ const moduleDataPromise = Promise.all(
         set modulesData(value){
             saveModulesLoactions(value);
             moduleData = value
+        },
+        scheduleAsyncTask() {
+            /**@type { ReturnType<window["moduleLoader"]["scheduleAsyncTask"]> } */
+            let res;
+            asyncTasks.push(new Promise((resolve, reject) => {
+                res = {resolve, reject};
+            }));
+            return res;
         }
     }
     
@@ -83,8 +94,11 @@ const modules = await modulesPromise;
 const moduleData = (await moduleDataPromise).map( ([name, description, path]) => ({ name, description, path, tags: ["core"] }));
 
 window.dispatchEvent(new CustomEvent("module:load"));
-queueMicrotask(()=>{
-    window.dispatchEvent(new CustomEvent("module:afterLoad"));
-    console.timeEnd("modules loaded in");
-    console.log("modules info:", moduleData);
-});
+
+await Promise.all(asyncTasks);
+asyncTasks.length = 0;
+
+window.dispatchEvent(new CustomEvent("module:afterLoad"));
+
+console.timeEnd("modules loaded in");
+console.log("modules info:", moduleData);
