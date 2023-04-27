@@ -3,7 +3,8 @@ function loadModulesLoactions(){
     return [
         "/client/modules/moduleLoaderGui/module.js",
         "/client/modules/modalProvider/module.js",
-        "/client/modules/contextMenuProvider/module.js"
+        "/client/modules/contextMenuProvider/module.js",
+        "/client/modules/gridProvider/module.js"
     ]
 }
 

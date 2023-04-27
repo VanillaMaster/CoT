@@ -1,8 +1,6 @@
 import "./moduleLoader/loader.js"
 
 
-
-import { GridStack } from "./GridStack.js";
 import { applyEffect } from "./FluentRevealEffect.js"
 
 import { translation } from "./lang.js";
@@ -40,6 +38,7 @@ document.addEventListener("contextmenu", function(e) {
 
 }
 
+/*
 const grid = GridStack.init({
     column: 12,
     minRow: 1,
@@ -48,12 +47,18 @@ const grid = GridStack.init({
     disableOneColumnMode: true,
     float: true
 });
+*/
+
+const grid = document.querySelector(".grid");
 
 const length = 3;
 const widgets = new Array(length);
 for (let i = 0; i < length; i++) {
     widgets[i] = createChartWidget(grid, gen(), { w:2, h: 2});
 }
+
+grid.append(...widgets);
+
 
 /*
 applyEffect('.grid', {

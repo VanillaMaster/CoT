@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
 
+:root {
+    --shaodw-color: aquamarine;
+    --widget-color: #444;
+}
+
 html {
     height: 100%;
     font-family: 'Open Sans', sans-serif;
@@ -17,9 +22,7 @@ body {
 
     width: 100%; 
     /*background-color: #282828;*/
-
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(6, 1fr);
+    height: 100%;
 }
 
 .grid::before {
@@ -31,12 +34,8 @@ body {
     filter: url(#noise);
 }
 
-.grid-stack-item-content{
-    background-color: #444;
+widget-container{
     color: #e1e1e1;
-    text-align: center;
-
-    position: relative;
 }
 
 /*

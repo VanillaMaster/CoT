@@ -16,11 +16,9 @@ const btn = /**@type { const } */ ({
 
 
 const chartWidgetTemplate = document.createRange().createContextualFragment(`
-<div>
-    <div class="grid-stack-item-content">
-        <svg-chart style="position: absolute; inset: 4px; background-color: #333;"></svg-chart>
-    </div>
-</div>
+<widget-container>
+    <svg-chart style="position: absolute; inset: 4px; background-color: #333;"></svg-chart>
+</widget-container>
 `);
 
 let target = null;
@@ -44,9 +42,7 @@ export function createChartWidget(grid, source, opts) {
     chart.setSource(source);
     chart.start();
 
-    const element = grid.addWidget(widget.children[0], opts);
-
-    const content = element.querySelector(".grid-stack-item-content");
+    const content = widget.querySelector("widget-container");
 
     content.addEventListener("contextmenu", function(e) {
         target = element;
@@ -56,5 +52,5 @@ export function createChartWidget(grid, source, opts) {
         window.modules.contextMenuProvider.show(chartWidgetContextMenu, x, y)
     })
 
-    return element;
+    return widget;
 }
