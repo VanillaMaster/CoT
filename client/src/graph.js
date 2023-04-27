@@ -45,7 +45,7 @@ const template = document.createRange().createContextualFragment(
 );
 
 
-class SVGChart extends HTMLElement {
+export class SVGChart extends HTMLElement {
     constructor() {
         super();
         this.#shadow = this.attachShadow({ mode: "closed" });
@@ -173,8 +173,8 @@ class SVGChart extends HTMLElement {
                     y: 0
                 }
             }
-            self.setAttribute("x", 0)
-            self.setAttribute("y", 0)
+            self.setAttribute("x", `${0}`)
+            self.setAttribute("y", `${0}`)
             self.append(text);
 
             this.#labels.push(vertex)
@@ -202,8 +202,8 @@ class SVGChart extends HTMLElement {
                     cy: 0
                 }
             }
-            self.setAttribute("cx", 0)
-            self.setAttribute("cy", 0)
+            self.setAttribute("cx", `${0}`)
+            self.setAttribute("cy", `${0}`)
 
             this.#vertices.push(vertex)
             this.#verticesContainer.append(self);
@@ -234,10 +234,10 @@ class SVGChart extends HTMLElement {
                     y2: 0
                 }
             };
-            self.setAttribute("x1", 0)
-            self.setAttribute("x2", 0)
-            self.setAttribute("y1", 0)
-            self.setAttribute("y2", 0)
+            self.setAttribute("x1", `${0}`)
+            self.setAttribute("x2", `${0}`)
+            self.setAttribute("y1", `${0}`)
+            self.setAttribute("y2", `${0}`)
 
             this.#segments.push(segment)
             this.#segmentsContainer.append(self);
@@ -248,8 +248,7 @@ class SVGChart extends HTMLElement {
     #draw = SVGChart.drawer(this);
 
     static observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-            /**@type { { target: SVGChart} } */
+        for (const entry of /**@type { (ResizeObserverEntry & { target: SVGChart})[] } */ (entries)) {
             const { target } = entry;
             const relativeStep = entry.contentRect.height / target.#props.height;
             const relativeWidth = entry.contentRect.width / relativeStep;
@@ -298,17 +297,17 @@ class SVGChart extends HTMLElement {
                 /**@type { {value: Label} } */
                 const { value: label } = labelIter.next();
                 if (label != undefined) {
-                    label.x.setAttribute("from", label.values.x);
-                    label.x.setAttribute("to", x2);
-                    label.self.setAttribute("x", x2);
+                    label.x.setAttribute("from", `${label.values.x}`);
+                    label.x.setAttribute("to", `${x2}`);
+                    label.self.setAttribute("x", `${x2}`);
                     label.values.x = x2;
 
-                    label.y.setAttribute("from", label.values.y);
-                    label.y.setAttribute("to", y2);
-                    label.self.setAttribute("y", y2);
+                    label.y.setAttribute("from", `${label.values.y}`);
+                    label.y.setAttribute("to", `${y2}`);
+                    label.self.setAttribute("y", `${y2}`);
                     label.values.y = y2;
 
-                    label.text.textContent = value;
+                    label.text.textContent = `${value}`;
                 } else {
                     console.error("label not found");
                 }
@@ -316,14 +315,14 @@ class SVGChart extends HTMLElement {
                 /**@type { {value: Vertex} } */
                 const { value: vertex } = vertexIter.next();
                 if (vertex != undefined) {
-                    vertex.cx.setAttribute("from", vertex.values.cx);
-                    vertex.cx.setAttribute("to", x2);
-                    vertex.self.setAttribute("cx", x2);
+                    vertex.cx.setAttribute("from", `${vertex.values.cx}`);
+                    vertex.cx.setAttribute("to", `${x2}`);
+                    vertex.self.setAttribute("cx", `${x2}`);
                     vertex.values.cx = x2;
 
-                    vertex.cy.setAttribute("from", vertex.values.cy);
-                    vertex.cy.setAttribute("to", y2);
-                    vertex.self.setAttribute("cy", y2);
+                    vertex.cy.setAttribute("from", `${vertex.values.cy}`);
+                    vertex.cy.setAttribute("to", `${y2}`);
+                    vertex.self.setAttribute("cy", `${y2}`);
                     vertex.values.cy = y2;
                 } else {
                     console.error("vertex not found");
@@ -333,24 +332,24 @@ class SVGChart extends HTMLElement {
                     /**@type { {value: Segment} } */
                     const { value: segment } = segmentIter.next();
                     if (segment != undefined) {
-                        segment.x1.setAttribute("from", segment.values.x1);
-                        segment.x1.setAttribute("to", x1);
-                        segment.self.setAttribute("x1", x1);
+                        segment.x1.setAttribute("from", `${segment.values.x1}`);
+                        segment.x1.setAttribute("to", `${x1}`);
+                        segment.self.setAttribute("x1", `${x1}`);
                         segment.values.x1 = x1;
 
-                        segment.x2.setAttribute("from", segment.values.x2);
-                        segment.x2.setAttribute("to", x2);
-                        segment.self.setAttribute("x2", x2);
+                        segment.x2.setAttribute("from", `${segment.values.x2}`);
+                        segment.x2.setAttribute("to", `${x2}`);
+                        segment.self.setAttribute("x2", `${x2}`);
                         segment.values.x2 = x2;
 
-                        segment.y1.setAttribute("from", segment.values.y1);
-                        segment.y1.setAttribute("to", y1);
-                        segment.self.setAttribute("y1", y1);
+                        segment.y1.setAttribute("from", `${segment.values.y1}`);
+                        segment.y1.setAttribute("to", `${y1}`);
+                        segment.self.setAttribute("y1", `${y1}`);
                         segment.values.y1 = y1;
 
-                        segment.y2.setAttribute("from", segment.values.y2);
-                        segment.y2.setAttribute("to", y2);
-                        segment.self.setAttribute("y2", y2);
+                        segment.y2.setAttribute("from", `${segment.values.y2}`);
+                        segment.y2.setAttribute("to", `${y2}`);
+                        segment.self.setAttribute("y2", `${y2}`);
                         segment.values.y2 = y2;
 
                     } else {
@@ -374,7 +373,7 @@ class SVGChart extends HTMLElement {
                 label.y.beginElement()
             }
 
-            yield 0;
+            yield;
 
             const first = self.#segments[0];
             const last = self.#segments.at(-1);
@@ -382,26 +381,26 @@ class SVGChart extends HTMLElement {
             const lastLabel = self.#labels.at(-1);
 
             last.values.x1 = -wu + self.#props.padding.width;
-            last.self.setAttribute("x1", last.values.x1)
+            last.self.setAttribute("x1", `${last.values.x1}`)
             last.values.x2 = self.#props.padding.width;
-            last.self.setAttribute("x2", last.values.x2)
+            last.self.setAttribute("x2", `${last.values.x2}`)
 
             lastVertex.values.cx = last.values.x1;
-            lastVertex.self.setAttribute("cx", lastVertex.values.cx);
+            lastVertex.self.setAttribute("cx", `${lastVertex.values.cx}`);
             
             lastLabel.values.x = last.values.x1;
-            lastLabel.self.setAttribute("x", lastLabel.values.x);
+            lastLabel.self.setAttribute("x", `${lastLabel.values.x}`);
 
             last.values.y1 = ((self.#props.values[0] - min) * hu) + self.#props.padding.height;
-            last.self.setAttribute("y1", last.values.y1);
+            last.self.setAttribute("y1", `${last.values.y1}`);
             last.values.y2 = first.values.y1;
-            last.self.setAttribute("y2", last.values.y2);
+            last.self.setAttribute("y2", `${last.values.y2}`);
 
             lastVertex.values.cy = last.values.y1
-            lastVertex.self.setAttribute("cy", lastVertex.values.cy);
+            lastVertex.self.setAttribute("cy", `${lastVertex.values.cy}`);
 
             lastLabel.values.y = last.values.y1;
-            lastLabel.self.setAttribute("y", lastLabel.values.y);
+            lastLabel.self.setAttribute("y", `${lastLabel.values.y}`);
 
             self.#segments.unshift(self.#segments.pop());
             self.#vertices.unshift(self.#vertices.pop());
@@ -415,8 +414,8 @@ function createAnimateElement(attr, parent) {
     elem.setAttribute("attributeName", attr);
     elem.setAttribute("repeatCount", "1");
     elem.setAttribute("dur", "500ms");
-    elem.setAttribute("from", 0);
-    elem.setAttribute("to", 0);
+    elem.setAttribute("from", `${0}`);
+    elem.setAttribute("to", `${0}`);
     parent.append(elem);
     return elem;
 }

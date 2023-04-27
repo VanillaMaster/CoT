@@ -1,6 +1,6 @@
 interface ModuleContainer {
     contextMenuProvider: {
-        show: (content: DocumentFragment, x: number, y: number) => void;
-        close: () => void;
+        define: (name: string, template: DocumentFragment) => void;
+        registry: Map<string, HTMLElement>;
     }
 }

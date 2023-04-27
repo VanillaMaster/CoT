@@ -397,6 +397,7 @@ customElements.define("widget-container", Widget);
  * @param {PointerEvent} e 
  */
 function pointerdown(e) {
+    if (e.button !== 0) return;
     if (this.grid.locked) return;
     this.grid.locked = true;
     this.setPointerCapture(e.pointerId)

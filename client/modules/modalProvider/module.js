@@ -11,7 +11,7 @@ document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
 
 window.addEventListener("module:load", ()=>{
     window.modules.modalProvider = {
-        modal: document.createElement("dialog", {is: "modal-container"})
+        modal: /**@type {any} */(document.createElement("dialog", {is: "modal-container"}))
     }
     document.body.append(window.modules.modalProvider.modal);
 }, {once: true});
