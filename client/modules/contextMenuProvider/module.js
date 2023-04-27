@@ -7,12 +7,6 @@ Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla.
 
 import style from "./style.js";
 
-/**@type { Map<string, ContextMenu> } */
-const registry = new Map();
-
-/**@type { Set<ContextMenu> } */
-const active = new Set();
-
 
 export class ContextMenu extends HTMLElement {
     constructor() {
@@ -31,6 +25,11 @@ export class ContextMenu extends HTMLElement {
     static template = document.createRange().createContextualFragment(
         `<div data-class="content"><slot></slot></div>`
     );
+
+    /**@type { Map<string, ContextMenu> } */
+    static registry = new Map();
+    /**@type { Set<ContextMenu> } */
+    static active = new Set();
 
     static style = new CSSStyleSheet();
     static {
@@ -60,12 +59,12 @@ export class ContextMenu extends HTMLElement {
         this.setAttribute("visible", "");
         this.style.setProperty("--x", `${x}px`);
         this.style.setProperty("--y", `${y}px`);
-        active.add(this);
+        ContextMenu.active.add(this);
     }
 
     close() {
         this.removeAttribute("visible");
-        active.delete(this);
+        ContextMenu.active.delete(this);
     }
 
     /**
@@ -86,7 +85,7 @@ document.addEventListener("pointerdown", function(e) {
 });
 
 document.addEventListener("pointerdown", function(e) {
-    for (const element of active) {
+    for (const element of ContextMenu.active) {
         element.close();
     }
 });
@@ -98,10 +97,10 @@ window.addEventListener("module:load", ()=>{
             /**@type { ContextMenu } */
             const menu = /**@type { any }*/(document.createElement("context-menu"));
             menu.init(html);
-            registry.set(name, menu);
+            ContextMenu.registry.set(name, menu);
             document.body.append(menu);
         },
-        registry
+        registry: ContextMenu.registry   
     }
 
 })
@@ -112,7 +111,7 @@ document.addEventListener("contextmenu", function(e) {
     const { clientX: x, clientY: y } = e;
     for (const element of e.composedPath()) if (element instanceof HTMLElement && "contextMenu" in element.dataset) {
         const name = element.dataset.contextMenu;
-        const menu = registry.get(name);
+        const menu = ContextMenu.registry.get(name);
         if (menu == undefined) break;
 
         menu.show(element, x, y);

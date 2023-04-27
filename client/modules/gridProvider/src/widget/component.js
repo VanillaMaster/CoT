@@ -237,6 +237,9 @@ export class Widget extends HTMLElement {
             this.addEventListener("pointerdown", /**@type { any }*/(pointerdown));
         }
     }
+    disconnectedCallback(){
+        this.grid.unregisterWidget(this.#id);
+    }
     
     #shiftX = 0;
     get shiftX() {

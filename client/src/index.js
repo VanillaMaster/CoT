@@ -10,6 +10,21 @@ import { createChartWidget } from "./widgets/ChartWidget.js";
 import { gen } from "../tests/gen.js";
 
 
+{
+    /**@type { HTMLElement } */
+    const grid = document.querySelector(".grid");
+    grid.dataset.contextMenu = "main";
+
+    const contextMenu = document.createRange().createContextualFragment(`
+        <ul class="context-menu-list">
+            <li><button data-context-action="edit">${translation["grid.contextmenu.edit"]}</button></li>
+        </ul>
+    `);
+
+    window.modules.contextMenuProvider.define("main", contextMenu);
+}
+
+
 const grid = document.querySelector(".grid");
 
 const length = 3;
@@ -19,19 +34,3 @@ for (let i = 0; i < length; i++) {
 }
 
 grid.append(...widgets);
-
-
-/*
-applyEffect('.grid', {
-    clickEffect: false,
-    lightColor: 'rgba(255,255,255,0.4)',
-    gradientSize: 80,
-    isContainer: true,
-    children: {
-        borderSelector: '.grid-stack-item-content',
-        elementSelector: '.item-container',
-        lightColor: 'rgba(255,255,255,0.1)',
-        gradientSize: 80
-    }
-})
-*/
