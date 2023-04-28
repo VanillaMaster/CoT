@@ -30,8 +30,8 @@ window.addEventListener("module:load", ()=>{
         close() {}
     }
 
-})
+}, {once: true})
 
 window.addEventListener("module:afterLoad", ()=>{
 
-})
+}, {once: true});

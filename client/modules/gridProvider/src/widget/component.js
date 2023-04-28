@@ -234,7 +234,7 @@ export class Widget extends HTMLElement {
         if (this.parentElement instanceof Grid) {
             this.#grid = this.parentElement;
             this.#id = this.grid.registerWidget(this);
-            this.addEventListener("pointerdown", /**@type { any }*/(pointerdown));
+            this.addEventListener("pointerdown", /**@type { any }*/(pointerdown), {passive: true});
         }
     }
     disconnectedCallback(){
