@@ -38,6 +38,7 @@ window.addEventListener("module:load", ()=>{
         define(name, html) {
             /**@type { ContextMenu } */
             const menu = /**@type { any }*/(document.createElement("context-menu"));
+            menu.dataset.name = name;
             menu.init(html);
             ContextMenu.registry.set(name, menu);
             document.body.append(menu);
