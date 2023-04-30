@@ -4,7 +4,8 @@ function loadModulesLoactions(){
         "/client/modules/moduleLoaderGui/module.js",
         "/client/modules/modalProvider/module.js",
         "/client/modules/contextMenuProvider/module.js",
-        "/client/modules/gridProvider/module.js"
+        "/client/modules/gridProvider/module.js",
+        "/client/modules/layoutManager/module.js"
     ]
 }
 
@@ -49,10 +50,18 @@ const moduleDataPromise = Promise.all(
 /**@type { Promise<void>[] } */
 const asyncTasks = [];
 
+
+const modules = await modulesPromise;
+
+//collect data
+/**@type { moduleData[] } */
+let moduleData = (await moduleDataPromise).map( ([name, description, path]) => ({ name, description, path, tags: ["core"] }));
+
+
 {
 
     /**@type {ModuleContainer} */
-    const modulesContainer = {};
+    const modulesContainer = /**@type {*}*/({});
     
     /**@type { moduleLoader } */
     const moduleLoader = {
@@ -87,12 +96,6 @@ const asyncTasks = [];
 
 }
 
-
-const modules = await modulesPromise;
-
-//collect data
-/**@type { moduleData[] } */
-const moduleData = (await moduleDataPromise).map( ([name, description, path]) => ({ name, description, path, tags: ["core"] }));
 
 window.dispatchEvent(new CustomEvent("module:load"));
 

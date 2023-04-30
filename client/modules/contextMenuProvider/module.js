@@ -32,8 +32,6 @@ document.addEventListener("contextmenu", function(e) {
 
 window.addEventListener("module:load", ()=>{
 
-    console.log(1);
-
     window.modules.contextMenuProvider = {
         define(name, html) {
             /**@type { ContextMenu } */

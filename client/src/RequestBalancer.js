@@ -1,10 +1,10 @@
-/** @typedef { { [rule: string]: { maxHits: number, currentHits: number, maxRestrict: number, currentRestrict: number period: number }[] } } Rules */
+/** @typedef { { [rule: string]: { maxHits: number, currentHits: number, maxRestrict: number, currentRestrict: number, period: number }[] } } Rules */
 
 
 export class RequestBalancer {
     constructor(){}
 
-    /**@type { [URL, RequestInit, (reason: Response | PromiseLike<Response>) => void, (reason?: any) => void][] } */
+    /**@type { [URL | RequestInfo, RequestInit & {proxy?: boolean}, (reason: Response | PromiseLike<Response>) => void, (reason?: any) => void][] } */
     #queue = [];
     #running = false;
     #queueProcessor = RequestBalancer.queueProcessor(this);

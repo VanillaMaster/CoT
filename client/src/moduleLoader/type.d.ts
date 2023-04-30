@@ -14,7 +14,7 @@ interface ModuleContainer {};
 
 type moduleLoader = {
     scheduleAsyncTask: () => { resolve: () => void; reject: (reason: Error) => void }
-    modulesData: string[];
+    modulesData: moduleData[];
 }
 
 type moduleData = {

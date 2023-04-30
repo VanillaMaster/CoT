@@ -4,3 +4,7 @@ interface ModuleContainer {
         registry: Map<string, HTMLElement>;
     }
 }
+
+namespace CustomComponents {
+    type ContextMenu = import("./component.js").ContextMenu;
+}

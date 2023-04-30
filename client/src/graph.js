@@ -64,8 +64,13 @@ export class SVGChart extends HTMLElement {
     }
     disconnectedCallback(){
         SVGChart.observer.unobserve(this);
-        this.stop();
     }
+    
+    remove(){
+        this.stop();
+        super.remove();
+    }
+
     #shadow;
 
     #svg;
@@ -249,6 +254,7 @@ export class SVGChart extends HTMLElement {
 
     static observer = new ResizeObserver((entries) => {
         for (const entry of /**@type { (ResizeObserverEntry & { target: SVGChart})[] } */ (entries)) {
+            if (entry.contentRect.height === 0 && entry.contentRect.width === 0) continue;
             const { target } = entry;
             const relativeStep = entry.contentRect.height / target.#props.height;
             const relativeWidth = entry.contentRect.width / relativeStep;

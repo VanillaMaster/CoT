@@ -3,7 +3,8 @@
         "checkJs": true,
         "target": "ES2022",
         "moduleResolution": "nodenext",
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "module": "ESNext"
     },
     "exclude": [
         "client/node_modules",

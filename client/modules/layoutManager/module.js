@@ -1,41 +1,9 @@
-class Layout extends HTMLElement {
-    constructor() {
-        super();
-    }
+/**
+@module LayoutManaget
+@description Lorem ipsum dolor sit amet consectetur adipisicing elit.
+Architecto quos voluptates accusantium mollitia odit est ullam cumque dignissimos amet.
+Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla. 
+*/
+import { Layout } from "./component.js";
 
-    
-}
-
-class LayoutContainer extends HTMLDivElement {
-    constructor() {
-        super();
-    }
-
-    #parent;
-    set parent(value) {
-        this.#parent = value;
-    }
-    
-    connectedCallback() {
-
-    }
-    disconnectedCallback() {
-
-    }
-
-    adoptedCallback() {
-
-    }
-
-    remove() {
-        super.remove();
-    }
-
-    show(){
-
-    }
-
-    hide(){
-
-    }
-}
+customElements.define("layout-viewport", Layout);
