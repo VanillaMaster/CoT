@@ -1,5 +1,4 @@
-import "../graph.js";
-import { translation } from "../lang.js";
+import { translation } from "#lang";
 
 const chartWidgetContextMenu = document.createRange().createContextualFragment(`
     <ul class="context-menu-list">
@@ -11,7 +10,7 @@ const chartWidgetContextMenu = document.createRange().createContextualFragment(`
 `);
 
 window.addEventListener("module:afterLoad", ()=>{
-    window.modules.contextMenuProvider.define("widget", chartWidgetContextMenu);
+    window.app.modules.contextMenuProvider.define("widget", chartWidgetContextMenu);
 }, {once: true});
 
 
@@ -23,12 +22,11 @@ const chartWidgetTemplate = document.createRange().createContextualFragment(`
 
 
 /**
- * @param {*} source 
+ * @param { AsyncGenerator<number, void, unknown> } source 
  */
 export function createChartWidget(source) {
-    /**@type { DocumentFragment } */
-    const widget = /**@type {any} */(chartWidgetTemplate.cloneNode(true));
-    /**@type { import("../graph.js").SVGChart } */
+    const widget = chartWidgetTemplate.cloneNode(true);
+    /**@type { CustomComponents.SVGChart } */
     const chart = widget.querySelector("svg-chart")
     chart.setSource(source);
     chart.start();

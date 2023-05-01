@@ -4,7 +4,11 @@
         "target": "ES2022",
         "moduleResolution": "nodenext",
         "resolveJsonModule": true,
-        "module": "ESNext"
+        "module": "ESNext",
+        "baseUrl": ".",
+        "paths": {
+            "#lang": ["src/lang.js"]
+        }
     },
     "exclude": [
         "client/node_modules",

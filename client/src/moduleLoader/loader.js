@@ -1,25 +1,16 @@
-//TODO: implement it
-function loadModulesLoactions(){
-    return [
-        "/client/modules/moduleLoaderGui/module.js",
-        "/client/modules/modalProvider/module.js",
-        "/client/modules/contextMenuProvider/module.js",
-        "/client/modules/gridProvider/module.js",
-        "/client/modules/layoutManager/module.js"
-    ]
-}
-
-/**
- * @param { moduleData[] } list
- */
-function saveModulesLoactions(list){
-
-}
+import { get, set } from "./storage.js";
 
 const exps = /**@type {const} */ ({
     info: new RegExp(/(?<=\/\*\*)(.*?)(?=\*\/)/s),
     module: new RegExp(/(?<=@module ).*?(?=\n)/s),
     description: new RegExp(/(?<=@description ).*/s)
+});
+
+const app = {};
+Object.defineProperty(window, "app", {
+    value: app,
+    writable: false,
+    configurable: false,
 });
 
 /**
@@ -34,18 +25,14 @@ async function getModuleInfo(url) {
     return [name, description, url];
 }
 
-const modulesPaths = loadModulesLoactions();
-
-/**@type { Promise<Module[]> } */
-const modulesPromise = Promise.all(
-    modulesPaths.map(location => import(location))
-);
-
 console.time("modules loaded in")
+const modulesPaths = Object.entries(await get()).filter(([key, value]) => !value.disabled).map(([key]) => key);
 
-const moduleDataPromise = Promise.all(
-    modulesPaths.map(location => getModuleInfo(location))
-);
+/**@type { Promise<any> } */
+const modulesPromise = Promise.all(modulesPaths.map(location => import(location)));
+const moduleDataPromise = Promise.all(modulesPaths.map(location => getModuleInfo(location)));
+
+
 
 /**@type { Promise<void>[] } */
 const asyncTasks = [];
@@ -55,25 +42,21 @@ const modules = await modulesPromise;
 
 //collect data
 /**@type { moduleData[] } */
-let moduleData = (await moduleDataPromise).map( ([name, description, path]) => ({ name, description, path, tags: ["core"] }));
-
+let moduleData = (await moduleDataPromise).map( ([name, description, path]) => ({ name, description, path, tags: [] }));
 
 {
 
-    /**@type {ModuleContainer} */
-    const modulesContainer = /**@type {*}*/({});
-    
     /**@type { moduleLoader } */
     const moduleLoader = {
         get modulesData(){
             return moduleData
         },
         set modulesData(value){
-            saveModulesLoactions(value);
+            //saveModulesLoactions(value);
             moduleData = value
         },
         scheduleAsyncTask() {
-            /**@type { ReturnType<window["moduleLoader"]["scheduleAsyncTask"]> } */
+            /**@type { ReturnType<window["app"]["moduleLoader"]["scheduleAsyncTask"]> } */
             let res;
             asyncTasks.push(new Promise((resolve, reject) => {
                 res = {resolve, reject};
@@ -82,14 +65,16 @@ let moduleData = (await moduleDataPromise).map( ([name, description, path]) => (
         }
     }
     
-    Object.defineProperty(window, "modules", {
-        value: modulesContainer,
+    Object.defineProperty(app, "moduleLoader", {
+        value: moduleLoader,
         writable: false,
         configurable: false,
     });
     
-    Object.defineProperty(window, "moduleLoader", {
-        value: moduleLoader,
+    /**@type {ModuleContainer} */
+    const modulesContainer = /**@type {*}*/({});
+    Object.defineProperty(app, "modules", {
+        value: modulesContainer,
         writable: false,
         configurable: false,
     });

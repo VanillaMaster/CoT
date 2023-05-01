@@ -10,17 +10,33 @@
 
     <link rel="stylesheet" href="./styles/context.css">
 
+    <script type="importmap">
+        {
+          "imports": {
+            "#lang": "./src/lang.js"
+          }
+        }
+    </script>
+
     <script src="./src/index.js" type="module"></script>
 </head>
 <body>
 
     <aside class="sidebar">
-        <button id="btn-layout-home">
-            <svg><use href="#icon-home"></use></svg>
-        </button>
-        <button id="btn-layout-settings">
-            <svg><use href="#icon-settings"></use></svg>
-        </button>
+        <div class="top">
+            <button id="btn-layout-home" title="home">
+                <svg><use href="#icon-home"></use></svg>
+            </button>
+            <button id="btn-layout-popup" title="popup">
+                <svg><use href="#icon-popup"></use></svg>
+            </button>
+        </div>
+        <div class="middle"></div>
+        <div class="bottom">
+            <button id="btn-layout-settings" title="settings">
+                <svg><use href="#icon-settings"></use></svg>
+            </button>
+        </div>
     </aside>
 
     <layout-viewport active="widget-grid" data-name="app-viewport">
@@ -30,8 +46,10 @@
         </section>
 
         <section data-name="settings">
-            <div style="height: calc(100% - (1em * 2));padding: 1em;">
+            <div style="height: calc(100% - (1em * 2));padding: 1em;display: flex;flex-direction: row;gap: 1em;">
+
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae rerum atque accusantium tenetur magnam asperiores odio. Quam sint, rem, eaque suscipit perferendis, voluptatem ad eum vitae quisquam maiores provident magnam.
+                
             </div>
         </section>
 
@@ -53,12 +71,22 @@
         </defs>
 
 
-        <symbol id="icon-settings" viewBox="0 96 960 960">
+        <symbol id="icon-settings_" viewBox="0 96 960 960">
             <path d="m388 976-20-126q-19-7-40-19t-37-25l-118 54-93-164 108-79q-2-9-2.5-20.5T185 576q0-9 .5-20.5T188 535L80 456l93-164 118 54q16-13 37-25t40-18l20-127h184l20 126q19 7 40.5 18.5T669 346l118-54 93 164-108 77q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l108 78-93 164-118-54q-16 13-36.5 25.5T592 850l-20 126H388Zm92-270q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Z"/>
         </symbol>
 
         <symbol id="icon-home" viewBox="0 96 960 960">
             <path d="M160 936V456l320-240 320 240v480H560V656H400v280H160Z"/>
+        </symbol>
+
+        <symbol id="icon-popup" viewBox="0 0 24 24">
+            <path d="M18 9H13V13H18V9Z"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M2 5C2 4.44772 2.44772 4 3 4H21C21.5523 4 22 4.44772 22 5V16C22 16.5523 21.5523 17 21 17H3C2.44772 17 2 16.5523 2 16V5ZM20 6H11V15H20V6Z" />
+            <path d="M8 19C6.89543 19 6 19.8954 6 21H18C18 19.8954 17.1046 19 16 19H8Z"/>
+        </symbol>
+
+        <symbol id="icon-settings" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.81056 2.75746C9.92185 2.3123 10.3218 2 10.7807 2H13.2191C13.678 2 14.078 2.3123 14.1893 2.75746L14.9076 5.63058C15.3144 5.8166 15.7003 6.04045 16.0608 6.29764L18.9099 5.48263C19.351 5.35643 19.8215 5.54668 20.0509 5.94407L21.2701 8.05583C21.4996 8.45322 21.4291 8.95576 21.0992 9.27473L18.9687 11.3347C18.9894 11.5537 18.9999 11.7756 18.9999 12C18.9999 12.2246 18.9894 12.4466 18.9687 12.6658L21.0985 14.7252C21.4284 15.0441 21.4989 15.5467 21.2694 15.9441L20.0502 18.0558C19.8208 18.4532 19.3503 18.6435 18.9092 18.5173L16.0607 17.7024C15.7002 17.9596 15.3144 18.1834 14.9076 18.3694L14.1893 21.2425C14.078 21.6877 13.678 22 13.2191 22H10.7807C10.3218 22 9.92185 21.6877 9.81056 21.2425L9.09228 18.3694C8.68548 18.1834 8.2996 17.9596 7.93914 17.7024L5.09069 18.5173C4.64952 18.6435 4.17907 18.4532 3.94963 18.0558L2.73041 15.9441C2.50098 15.5467 2.57144 15.0441 2.90132 14.7252L5.03117 12.6658C5.0105 12.4466 4.99992 12.2246 4.99992 12C4.99992 11.7756 5.01048 11.5537 5.03112 11.3347L2.90062 9.27473C2.57074 8.95576 2.50027 8.45322 2.72971 8.05583L3.94893 5.94407C4.17836 5.54668 4.64881 5.35643 5.08998 5.48263L7.93904 6.29764C8.29953 6.04045 8.68545 5.8166 9.09228 5.63058L9.81056 2.75746ZM12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12C15 13.6569 13.6569 15 12 15Z"/>
         </symbol>
     </svg>
     

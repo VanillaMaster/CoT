@@ -22,6 +22,9 @@ export class Layout extends HTMLElement {
 
     #slot;
 
+    /**
+     * @param { string } name 
+     */
     show(name){
         this.setAttribute("active", name);
     }
@@ -39,8 +42,8 @@ export class Layout extends HTMLElement {
     /**@satisfies { {[key in (typeof Layout)["observedAttributes"][number]]: (this: Layout, oldVal: string, newVal: string) => any} } */
     static #handlers = {
         "active"(oldVal, newVal) {
-            const element = this.querySelector(`:scope>[data-name="${newVal}"]`);
-            this.#slot.assign(element);
+            const elements = this.querySelectorAll(`:scope>[data-name="${newVal}"]`);
+            HTMLSlotElement.prototype.assign.apply(this.#slot, elements);
         },
     }
 

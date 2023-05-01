@@ -32,7 +32,7 @@ document.addEventListener("contextmenu", function(e) {
 
 window.addEventListener("module:load", ()=>{
 
-    window.modules.contextMenuProvider = {
+    window.app.modules.contextMenuProvider = {
         define(name, html) {
             /**@type { ContextMenu } */
             const menu = /**@type { any }*/(document.createElement("context-menu"));

@@ -1,55 +1,10 @@
-/**
- * @typedef { {self: SVGLineElement, x1: SVGAnimateElement, x2: SVGAnimateElement, y1: SVGAnimateElement, y2: SVGAnimateElement, values: {x1: number, x2: number, y1: number, y2: number}, represents?: number} } Segment
- * @typedef { {self: SVGCircleElement, cx: SVGAnimateElement, cy: SVGAnimateElement, values: { cx: number, cy: number }, represents?: number} } Vertex
- * @typedef { {self: SVGTextElement, x: SVGAnimateElement, y: SVGAnimateElement, text: SVGTSpanElement, values: {x: number, y: number}, represents?: number} } Label
-*/
-
-const style = new CSSStyleSheet();
-style.replaceSync(
-    `svg {
-        bottom: 0;
-        right: 0;
-        height: 100%;
-        position: absolute;
-    }
-    svg line {
-        stroke: var(--stroke, #0074d9);
-        stroke-width: var(--stroke-width ,2);
-        stroke-linecap: round;
-    }
-    svg circle {
-        r: var(--r, 4);
-        fill: var(--vertex-color, #0074d9);
-    }
-    svg text {
-        transform: scale(-1, -1);
-        transform-origin: center center;
-        transform-box: fill-box;
-        fill: white;
-    }
-    :host(*) {
-        min-height: 100px;
-        min-width: 100px;
-        position: relative;
-        overflow: hidden;
-        display: block;
-    }`
-);
-
-const template = document.createRange().createContextualFragment(
-    `<svg transform="scale(-1, -1)" transform-origin="center" viewBox="0 0 1000 500">
-        <g id="segments"></g>
-        <g id="vertices"></g>
-        <g id="labels"></g>
-    </svg>`
-);
-
+import style from "./style.js";
 
 export class SVGChart extends HTMLElement {
     constructor() {
         super();
         this.#shadow = this.attachShadow({ mode: "closed" });
-        this.#shadow.append(template.cloneNode(true));
+        this.#shadow.append(SVGChart.template.cloneNode(true));
 
         this.#svg = this.#shadow.querySelector("svg");
 
@@ -57,8 +12,22 @@ export class SVGChart extends HTMLElement {
         this.#verticesContainer = this.#svg.getElementById("vertices");
         this.#labelsContainer = this.#svg.getElementById("labels");
 
-        this.#shadow.adoptedStyleSheets = [style];
+        this.#shadow.adoptedStyleSheets = [SVGChart.style];
     }
+
+    static template = document.createRange().createContextualFragment(
+        `<svg transform="scale(-1, -1)" transform-origin="center" viewBox="0 0 1000 500">
+            <g id="segments"></g>
+            <g id="vertices"></g>
+            <g id="labels"></g>
+        </svg>`
+    );
+
+    static style = new CSSStyleSheet();
+    static {
+        this.style.replace(style)
+    }
+
     connectedCallback(){
         SVGChart.observer.observe(this);
     }
@@ -79,11 +48,11 @@ export class SVGChart extends HTMLElement {
     #verticesContainer;
     #labelsContainer;
 
-    /**@type { Segment[] } */
+    /**@type { SVGChartInnerType.Segment[] } */
     #segments = [];
-    /**@type { Vertex[] } */
+    /**@type { SVGChartInnerType.Vertex[] } */
     #vertices = [];
-    /**@type { Label[] } */
+    /**@type { SVGChartInnerType.Label[] } */
     #labels = [];
     /**@type {AsyncGenerator<number, void, void>} */
     #gen;
@@ -167,7 +136,7 @@ export class SVGChart extends HTMLElement {
         while (this.#labels.length - this.#props.length < 2) {
             const self = document.createElementNS("http://www.w3.org/2000/svg", "text");
             const text = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-            /**@type { Label } */
+            /**@type { SVGChartInnerType.Label } */
             const vertex = {
                 self,
                 x: createAnimateElement("x", self),
@@ -197,7 +166,7 @@ export class SVGChart extends HTMLElement {
         //add new
         while (this.#vertices.length - this.#props.length < 2) {
             const self = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            /**@type { Vertex } */
+            /**@type { SVGChartInnerType.Vertex } */
             const vertex = {
                 self,
                 cx: createAnimateElement("cx", self),
@@ -225,7 +194,7 @@ export class SVGChart extends HTMLElement {
         //add new
         while (this.#segments.length <= this.#props.length) {
             const self = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            /**@type { Segment } */
+            /**@type { SVGChartInnerType.Segment } */
             const segment = {
                 self,
                 x1: createAnimateElement("x1", self),
@@ -300,7 +269,7 @@ export class SVGChart extends HTMLElement {
                 x2 = (i++ * wu) + self.#props.padding.width;
                 y2 = ((value - min) * hu) + self.#props.padding.height;
 
-                /**@type { {value: Label} } */
+                /**@type { {value: SVGChartInnerType.Label} } */
                 const { value: label } = labelIter.next();
                 if (label != undefined) {
                     label.x.setAttribute("from", `${label.values.x}`);
@@ -318,7 +287,7 @@ export class SVGChart extends HTMLElement {
                     console.error("label not found");
                 }
 
-                /**@type { {value: Vertex} } */
+                /**@type { {value: SVGChartInnerType.Vertex} } */
                 const { value: vertex } = vertexIter.next();
                 if (vertex != undefined) {
                     vertex.cx.setAttribute("from", `${vertex.values.cx}`);
@@ -335,7 +304,7 @@ export class SVGChart extends HTMLElement {
                 }
 
                 if ((x1 != null && x2 != null) && (y1 != null && y2 != null)) {
-                    /**@type { {value: Segment} } */
+                    /**@type { {value: SVGChartInnerType.Segment} } */
                     const { value: segment } = segmentIter.next();
                     if (segment != undefined) {
                         segment.x1.setAttribute("from", `${segment.values.x1}`);
@@ -425,5 +394,3 @@ function createAnimateElement(attr, parent) {
     parent.append(elem);
     return elem;
 }
-
-customElements.define("svg-chart", SVGChart);

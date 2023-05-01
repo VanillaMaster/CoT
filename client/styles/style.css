@@ -29,7 +29,6 @@ body {
     /*background-color: #282828;*/
     height: 100%;
     position: relative;
-    flex-grow: 1;
     overflow: hidden;
 }
 
@@ -52,10 +51,12 @@ body::before {
     display: flex;
     flex-direction: column;
     background: darkslategrey;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
 
     gap: 0.25em;
+
+    flex-basis: 0;
 }
 
 .sidebar button {

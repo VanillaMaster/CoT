@@ -2,14 +2,6 @@ type Optional<T> = {
     [K in keyof T]: T[K]
 }
 
-type Module = {
-    name: string;
-    description: string;
-
-    load: () => Promise<void>;
-    afterLoad?: () => Promise<void>;
-}
-
 interface ModuleContainer {};
 
 type moduleLoader = {
@@ -25,6 +17,8 @@ type moduleData = {
 }
 
 interface Window {
-    modules: ModuleContainer;
-    moduleLoader: moduleLoader;
+    app: {
+        modules: ModuleContainer;
+        moduleLoader: moduleLoader;
+    }
 }
