@@ -19,7 +19,7 @@ if ('serviceWorker' in navigator) {
 
     const contextMenu = document.createRange().createContextualFragment(`
         <ul class="context-menu-list">
-            <li><button data-context-action="edit">${translation["grid.contextmenu.edit"]}</button></li>
+            <li><button data-context-action="add">${translation["grid.contextmenu.add"]}</button></li>
         </ul>
     `);
 
