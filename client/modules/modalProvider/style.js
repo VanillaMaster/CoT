@@ -2,10 +2,16 @@ export default `
 dialog[data-is="modal"] {
     /*margin-left: 10%;*/
     /*margin-right: 10%;*/
-    margin-top: 5%;
-    margin-bottom: 5%;
+    /*margin-top: 5%;*/
+    /*margin-bottom: 5%;*/
+    /*height: min(50em, 75vh);*/
+    /*width: min(35em, 75vw);*/
+    max-width: 80vw;
+    max-height: 80vh;
+    aspect-ratio: 11 / 16;
     height: auto;
-    width: 35em;
+    width: auto;
+
     padding: 0;
 
     position: relative;

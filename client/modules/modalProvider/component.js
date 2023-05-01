@@ -11,10 +11,10 @@ export class Modal extends HTMLDialogElement {
         this.dataset.is = "modal";
         
         this.#view = template.querySelector("layout-viewport");
-        this.#view.addEventListener("pointerdown", function(e) {
+        this.#view.addEventListener("pointerup", function(e) {
             e.stopPropagation();
         })
-        this.addEventListener("pointerdown", function(e) {
+        this.addEventListener("pointerup", function(e) {
             e.stopPropagation();
             this.close();
         })

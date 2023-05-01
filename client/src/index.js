@@ -7,6 +7,11 @@ import "../../proxy/src/patch.js";
 import { createChartWidget } from "./widgets/ChartWidget.js";
 import { gen } from "../tests/gen.js";
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register("./worker.js")
+}
+
+
 {
     /**@type { HTMLElement } */
     const grid = document.querySelector(".grid");

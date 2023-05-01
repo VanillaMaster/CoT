@@ -1,0 +1,22 @@
+{
+    "name": "Companion of Trade",
+    "short_name": "CoT",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#fff",
+    "description": "Path of Exile trade monitoring",
+    "icons": [
+        {
+            "src": "/client/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }, 
+        {
+            "src": "/client/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
