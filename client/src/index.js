@@ -46,9 +46,12 @@ if ('serviceWorker' in navigator) {
     homeBtn.addEventListener("click", (e)=>{
         viewport.show("widget-grid");
     })
+    const t = /**@type {HTMLTemplateElement} */(document.getElementById("t"));
+    t.content.querySelector("textarea").value = JSON.stringify({"query": {"status": {"option": "online"},"have": ["divine"],"want": ["chaos"]},"sort": {"have": "asc"},"engine": "new"} ,undefined, 2)
+    window.app.modules.modalProvider.define("create-widget", t.content.cloneNode(true));
 
     popupBtn.addEventListener("click", (e)=>{
-        window.app.modules.modalProvider.show("");
+        window.app.modules.modalProvider.show("create-widget");
     })
 }
 

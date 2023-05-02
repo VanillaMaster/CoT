@@ -1,7 +1,7 @@
 export default
 `
 :host {
-    font-size: 14px;
+    font-size: inherit;
     z-index: 101;
     
     overflow: hidden;
