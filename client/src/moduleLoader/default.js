@@ -21,5 +21,8 @@ export default
     },
     "/client/modules/chartProvider/module.js": {
         disabled: false
+    },
+    "/client/modules/wc__/module.js": {
+        disabled: false
     }
 })

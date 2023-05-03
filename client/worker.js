@@ -11,5 +11,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    console.log('Происходит запрос на сервер');
+    //console.log(event.request);
+    //event.respondWith(fetch(event.request))
 });

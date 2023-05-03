@@ -9,7 +9,7 @@ async function getDefault(){
 export async function get(){
     const raw = window.localStorage.getItem(KEY);
     /**@type { import("./default.js")["default"] } */
-    const data = (raw != null)? JSON.parse(raw) : getDefault();
+    const data = (raw != null && false)? JSON.parse(raw) : getDefault();
     return data;
 }
 /**
