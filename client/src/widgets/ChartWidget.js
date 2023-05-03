@@ -9,10 +9,9 @@ const chartWidgetContextMenu = document.createRange().createContextualFragment(`
     </ul>
 `);
 
-window.addEventListener("module:afterLoad", ()=>{
-    window.app.modules.contextMenuProvider.define("widget", chartWidgetContextMenu);
-}, {once: true});
-
+require(["contextMenuProvider"], function(contextMenuProvider){
+    contextMenuProvider.define("widget", chartWidgetContextMenu);
+});
 
 const chartWidgetTemplate = document.createRange().createContextualFragment(`
 <widget-container data-context-menu="widget">

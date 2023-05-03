@@ -6,15 +6,13 @@ Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla.
 */
 import { Modal, style } from "./component.js"
 
+define("modalProvider", [], function(){
+    /**@type {Modal} */
+    const modal = /**@type {*}*/ (document.createElement("dialog", {is: "modal-container"}));
+    document.body.append(modal);
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
 
-document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
-
-/**@type {Modal} */
-const modal = /**@type {*}*/ (document.createElement("dialog", {is: "modal-container"}));
-document.body.append(modal);
-
-window.addEventListener("module:load", ()=>{
-    window.app.modules.modalProvider = {
+    return {
         define(name, fragment) {
             const section = document.createElement("section");
             section.dataset.name = name;
@@ -26,8 +24,5 @@ window.addEventListener("module:load", ()=>{
             modal.showModal();
         }
     }
-}, {once: true});
+});
 
-window.addEventListener("module:afterLoad", ()=>{
-
-}, {once: true});

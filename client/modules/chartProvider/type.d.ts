@@ -2,6 +2,12 @@ namespace CustomComponents {
     type SVGChart = import("./component.js").SVGChart;
 }
 
+interface ModuleContainer {
+    SVGChartProvider: {
+        SVGChart: typeof import("./component.js").SVGChart;
+    }
+}
+
 namespace SVGChartInnerType {
     type Segment = {
         self: SVGLineElement,

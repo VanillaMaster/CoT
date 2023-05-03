@@ -1,4 +1,4 @@
-import "./moduleLoader/loader.js"
+import "./moduleLoader/index.js"
 
 import { translation } from "./lang.js";
 
@@ -12,21 +12,19 @@ if ('serviceWorker' in navigator) {
 }
 
 
-{
+require(["contextMenuProvider", "modalProvider"], function(contextMenuProvider, modalProvider){
     /**@type { HTMLElement } */
     const grid = document.querySelector(".grid");
     grid.dataset.contextMenu = "main";
-
+    
     const contextMenu = document.createRange().createContextualFragment(`
         <ul class="context-menu-list">
             <li><button data-context-action="add">${translation["grid.contextmenu.add"]}</button></li>
         </ul>
     `);
+    
+    contextMenuProvider.define("main", contextMenu);
 
-    window.app.modules.contextMenuProvider.define("main", contextMenu);
-}
-
-{
     /**@type {CustomComponents.Layout} */
     const viewport = document.querySelector(`[data-name="app-viewport"]`);
 
@@ -48,18 +46,22 @@ if ('serviceWorker' in navigator) {
     })
     
     popupBtn.addEventListener("click", (e)=>{
-        window.app.modules.modalProvider.show("create-widget");
+        modalProvider.show("create-widget");
     })
-}
 
+    
+});
 
-const grid = document.querySelector(".grid");
-
-const length = 3;
-const widgets = new Array(length);
-for (let i = 0; i < length; i++) {
-    widgets[i] = createChartWidget(gen());
-}
+require(["SVGChartProvider"], function(){
+    const grid = document.querySelector(".grid");
+    
+    const length = 3;
+    const widgets = new Array(length);
+    for (let i = 0; i < length; i++) {
+        widgets[i] = createChartWidget(gen());
+    }
+    grid.append(...widgets);
+})
 
 /*
 
@@ -115,4 +117,3 @@ widgets[0] = createChartWidget((async function*(){
 
 */
 
-grid.append(...widgets);

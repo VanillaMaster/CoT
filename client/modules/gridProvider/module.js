@@ -7,3 +7,10 @@ Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla.
 
 import { Widget } from "./src/widget/component.js"
 import { Grid } from "./src/grid/component.js"
+
+define("WidgetGridProvider", [], function(){
+    return {
+        Widget, 
+        Grid
+    }
+});

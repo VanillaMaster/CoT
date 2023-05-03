@@ -26,7 +26,7 @@ export class Layout extends HTMLElement {
      * @param { string } name 
      */
     show(name){
-        this.setAttribute("active", name);
+        this.dataset.active = name;
     }
 
     /**
@@ -41,13 +41,13 @@ export class Layout extends HTMLElement {
 
     /**@satisfies { {[key in (typeof Layout)["observedAttributes"][number]]: (this: Layout, oldVal: string, newVal: string) => any} } */
     static #handlers = {
-        "active"(oldVal, newVal) {
+        "data-active"(oldVal, newVal) {
             const elements = this.querySelectorAll(`:scope>[data-name="${newVal}"]`);
             HTMLSlotElement.prototype.assign.apply(this.#slot, elements);
         },
     }
 
     static get observedAttributes() {
-        return /**@type { const } */ (["active"]);
+        return /**@type { const } */ (["data-active"]);
     }
 }

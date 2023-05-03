@@ -1,93 +1,99 @@
-import { get, set } from "./storage.js";
+export class Loader {
+    constructor(){}
 
-const exps = /**@type {const} */ ({
-    info: new RegExp(/(?<=\/\*\*)(.*?)(?=\*\/)/s),
-    module: new RegExp(/(?<=@module ).*?(?=\n)/s),
-    description: new RegExp(/(?<=@description ).*/s)
-});
+    #doneFetch = false;
 
-const app = {};
-Object.defineProperty(window, "app", {
-    value: app,
-    writable: false,
-    configurable: false,
-});
+    /**@type { Optional<ModuleContainer> } */
+    modules = {};
 
-/**
- * @param { string } url
- * @returns { Promise<[string, string, string]> }
- */
-async function getModuleInfo(url) {
-    const moduleText = await (await fetch(url, {cache: "force-cache"})).text();
-    const info = moduleText.match(exps.info)?.[0] ?? `@module unknown\n@description unknown`;
-    const name = (info.match(exps.module)?.[0] ?? "unknown").trim();
-    const description = (info.match(exps.description)?.[0] ?? "unknown").trim();
-    return [name, description, url];
-}
+    /**@type { { [key in keyof ModuleContainer]?: {deps: (keyof ModuleContainer)[], required: number, callback: (...any) => void}[]} } */
+    #requireCallBacksMap = {}
 
-console.time("modules loaded in")
-const modulesPaths = Object.entries(await get()).filter(([key, value]) => !value.disabled).map(([key]) => key);
+    /**@type {[any, any, any][]} */
+    #unresolved = [];
 
-/**@type { Promise<any> } */
-const modulesPromise = Promise.all(modulesPaths.map(location => import(location)));
-const moduleDataPromise = Promise.all(modulesPaths.map(location => getModuleInfo(location)));
+    /**@type { loader.resolve } */
+    #resolve(name, dependencies, callback){
+        const ok = dependencies.reduce((ok, key) => key in this.modules && ok, true);
+        if (ok) {
+            console.time(name);
+            //@ts-ignore
+            const e = callback( ...dependencies.map(key => this.modules[key]) );
+            Promise.resolve(e).then(module => {
+                //debugger;
+                this.modules[name] = module;
+                if (this.#unresolved.length > 0) this.#tryResolve();
+                const container = this.#requireCallBacksMap[name] ?? /**@type { {deps: (keyof ModuleContainer)[], required: number, callback: (...any) => void}[] }*/([]);
+                for (let i = 0; i < container.length; i++) {
+                    const element = container[i];
+                    container.splice(i, 1);
+                    element.required--
+                    if (element.required == 0) {
+                        //@ts-ignore
+                        element.callback(...(element.deps.map(key => this.modules[key])));
+                        i--;
+                    }
+                }
 
-
-
-/**@type { Promise<void>[] } */
-const asyncTasks = [];
-
-
-const modules = await modulesPromise;
-
-//collect data
-/**@type { moduleData[] } */
-let moduleData = (await moduleDataPromise).map( ([name, description, path]) => ({ name, description, path, tags: [] }));
-
-{
-
-    /**@type { moduleLoader } */
-    const moduleLoader = {
-        get modulesData(){
-            return moduleData
-        },
-        set modulesData(value){
-            //saveModulesLoactions(value);
-            moduleData = value
-        },
-        scheduleAsyncTask() {
-            /**@type { ReturnType<window["app"]["moduleLoader"]["scheduleAsyncTask"]> } */
-            let res;
-            asyncTasks.push(new Promise((resolve, reject) => {
-                res = {resolve, reject};
-            }));
-            return res;
+                console.timeEnd(name);
+            })
         }
+        return ok;
     }
     
-    Object.defineProperty(app, "moduleLoader", {
-        value: moduleLoader,
-        writable: false,
-        configurable: false,
-    });
+    #tryResolve(){
+        let ok = false;
+        for (let i = 0; i < this.#unresolved.length; i++) {
+            const [name, dependencies, callback] = this.#unresolved[i];
+            if (this.#resolve(name, dependencies, callback)) {
+                ok = true;
+                this.#unresolved.splice(i, 1);
+                i--;
+            }
+            
+        }
     
-    /**@type {ModuleContainer} */
-    const modulesContainer = /**@type {*}*/({});
-    Object.defineProperty(app, "modules", {
-        value: modulesContainer,
-        writable: false,
-        configurable: false,
-    });
+        if ((!ok) && this.#doneFetch ) {
+            throw new Error("dependencies can not be resolved")
+        };
+    }
+
+    /**@type { loader.define } */
+    define(name, dependencies, callback){
+        if ( !(this.#resolve(name, dependencies, callback)) ) {
+            this.#unresolved.push([name, dependencies, callback]);
+        }
+    }
+
+    /**@type { loader.require } */
+    require(dependencies, callback){
+        const ok = dependencies.reduce((ok, key) => key in this.modules && ok, true);
+        if (ok) {
+            //@ts-ignore
+            callback( ...dependencies.map(key => this.modules[key]) )
+        } else {
+            /**@type { {deps: (keyof ModuleContainer)[], required: number, callback: (...any) => void} } */
+            const element = {
+                callback,
+                required: dependencies.length,
+                deps: /**@type {*}*/(dependencies)
+            }
+            for (const dependency of dependencies) {
+                const container = this.#requireCallBacksMap[dependency] ?? (this.#requireCallBacksMap[dependency] = []);
+                container.push(element)
+            }
+        }
+    }
+
+    /**
+     * @param { string[] } paths 
+     */
+    load(paths) {
+        console.time("module loaded in");
+        Promise.all(paths.map(location => import(location))).then(()=> {
+            this.#doneFetch = true;
+            console.timeEnd("module loaded in");
+        });
+    }
 
 }
-
-
-window.dispatchEvent(new CustomEvent("module:load"));
-
-await Promise.all(asyncTasks);
-asyncTasks.length = 0;
-
-window.dispatchEvent(new CustomEvent("module:afterLoad"));
-
-console.timeEnd("modules loaded in");
-console.log("modules info:", moduleData);
