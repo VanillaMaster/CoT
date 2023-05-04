@@ -6,7 +6,7 @@ export class SVGChart extends HTMLElement {
         this.#shadow = this.attachShadow({ mode: "closed" });
         this.#shadow.append(SVGChart.template.cloneNode(true));
 
-        this.#svg = this.#shadow.querySelector("svg");
+        this.#svg = /**@type { SVGSVGElement } */ (this.#shadow.querySelector("svg"));
 
         this.#segmentsContainer = this.#svg.getElementById("segments");
         this.#verticesContainer = this.#svg.getElementById("vertices");

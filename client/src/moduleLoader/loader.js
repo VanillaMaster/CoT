@@ -1,98 +1,146 @@
 export class Loader {
     constructor(){}
+    static #exp = new RegExp(/https?.*?\.js/g);
+    static config = class {
+        /**@param { Loader } self */
+        constructor(self) { this.#self = self }
+        #self;
+        export() {
+            return { ...this.#self.#meta.paths }
+        }
+        /**
+         * @param { loader.config } config 
+         */
+        import(config) {
+            /**@type { { [path: string]: {modules: string[]; imported: boolean} } } */
+            const modules = {};
+            for (const [key, value] of Object.entries(config.paths)) {
+                (modules[value] ?? (modules[value] = {imported: false, modules: []})).modules.push(key);
+            }
+            Object.assign(this.#self.#meta.paths, config.paths);
+            Object.assign(this.#self.#meta.modules, modules);
+        }
+    }
+    
+    /**@type { loader.queue } */
+    #queue = new Map();
+    /**@type { Map<string, any>} */
+    moduleRegistry = new Map();
 
-    #doneFetch = false;
+    #meta = {
+        /**@type { { [moduleName: string]: string } } */
+        paths: {},
+        /**@type { { [path: string]: {modules: string[]; imported: boolean} } } */
+        modules: {}
+    }
 
-    /**@type { Optional<ModuleContainer> } */
-    modules = {};
+    /**
+     * @param { string[] } dependencies 
+     * @param { (...args: any) => void } [callback] 
+     */
+    require(dependencies, callback) {
+        this.enqueue({
+            type: "require",
+            callback,
+            dependencies,
+            left: dependencies.length
+        })
+    }
+    /**
+     * @param { string } name 
+     * @param { string[] } dependencies 
+     * @param { (...args: any) => any } callback 
+     */
+    define(name, dependencies, callback){
+        const url = (new Error()).stack?.match(Loader.#exp).at(-1);
+        
+        (this.#meta.modules[url] ?? (this.#meta.modules[url] = {modules: [], imported: true})).modules.push(name);
+        this.#meta.paths[name] = url;
 
-    /**@type { { [key in keyof ModuleContainer]?: {deps: (keyof ModuleContainer)[], required: number, callback: (...any) => void}[]} } */
-    #requireCallBacksMap = {}
+        console.time(name);
+        this.enqueue({
+            type: "define",
+            name,
+            callback,
+            dependencies,
+            left: dependencies.length,
+        });
+    }
 
-    /**@type {[any, any, any][]} */
-    #unresolved = [];
-
-    /**@type { loader.resolve } */
-    #resolve(name, dependencies, callback){
-        const ok = dependencies.reduce((ok, key) => key in this.modules && ok, true);
-        if (ok) {
-            console.time(name);
-            //@ts-ignore
-            const e = callback( ...dependencies.map(key => this.modules[key]) );
-            Promise.resolve(e).then(module => {
-                //debugger;
-                this.modules[name] = module;
-                if (this.#unresolved.length > 0) this.#tryResolve();
-                const container = this.#requireCallBacksMap[name] ?? /**@type { {deps: (keyof ModuleContainer)[], required: number, callback: (...any) => void}[] }*/([]);
-                for (let i = 0; i < container.length; i++) {
-                    const element = container[i];
-                    container.splice(i, 1);
-                    element.required--
-                    if (element.required == 0) {
-                        //@ts-ignore
-                        element.callback(...(element.deps.map(key => this.modules[key])));
-                        i--;
+    /**
+     * @private
+     * @param { loader.queueElement } element 
+     */
+    enqueue(element) {
+        const urls = [];
+        for (const dependency of element.dependencies) {
+            if (this.moduleRegistry.has(dependency)) {
+                element.left--;
+            } else {
+                let container = this.#queue.get(dependency);
+                if (container == undefined) {
+                    container = [];
+                    this.#queue.set(dependency, container);
+                }
+                container.push(element);
+                if (dependency in this.#meta.paths) {
+                    const url = this.#meta.paths[dependency];
+                    if (!(this.#meta.modules[url].imported)) {
+                        this.#meta.modules[url].imported = true;
+                        urls.push(url)
                     }
                 }
-
-                console.timeEnd(name);
-            })
-        }
-        return ok;
-    }
-    
-    #tryResolve(){
-        let ok = false;
-        for (let i = 0; i < this.#unresolved.length; i++) {
-            const [name, dependencies, callback] = this.#unresolved[i];
-            if (this.#resolve(name, dependencies, callback)) {
-                ok = true;
-                this.#unresolved.splice(i, 1);
-                i--;
             }
-            
         }
-    
-        if ((!ok) && this.#doneFetch ) {
-            throw new Error("dependencies can not be resolved")
-        };
-    }
-
-    /**@type { loader.define } */
-    define(name, dependencies, callback){
-        if ( !(this.#resolve(name, dependencies, callback)) ) {
-            this.#unresolved.push([name, dependencies, callback]);
-        }
-    }
-
-    /**@type { loader.require } */
-    require(dependencies, callback){
-        const ok = dependencies.reduce((ok, key) => key in this.modules && ok, true);
-        if (ok) {
-            //@ts-ignore
-            callback( ...dependencies.map(key => this.modules[key]) )
-        } else {
-            /**@type { {deps: (keyof ModuleContainer)[], required: number, callback: (...any) => void} } */
-            const element = {
-                callback,
-                required: dependencies.length,
-                deps: /**@type {*}*/(dependencies)
-            }
-            for (const dependency of dependencies) {
-                const container = this.#requireCallBacksMap[dependency] ?? (this.#requireCallBacksMap[dependency] = []);
-                container.push(element)
-            }
+        this.load(...urls);
+        if (element.left == 0) {
+            this.resolve(element);
         }
     }
 
     /**
+     * @private
+     * @param { loader.queueElement } element 
+     */
+    async resolve(element){
+        const args = element.dependencies.map(name => this.moduleRegistry.get(name));
+        if (element.type == "require") {
+            element.callback?.apply(window, args);
+        }
+        if (element.type == "define") {
+            const module = await Promise.resolve(element.callback.apply(window, args));
+            this.moduleRegistry.set(element.name, module);
+            this.processQueue(element.name);
+        }
+    }
+
+    /**
+     * @private
+     * @param { string } name 
+     */
+    processQueue(name) {
+        const container = this.#queue.get(name);
+        if (container == undefined) return;
+        this.#queue.delete(name);
+        for (const element of container) {
+            if (--element.left == 0) {
+                this.resolve(element);
+            }
+        }
+    }
+
+    config = new Loader.config(this);
+
+    /**
      * @param { string[] } paths 
      */
-    load(paths) {
-        console.time("module loaded in");
+    load(...paths) {
+        if (paths.length <= 0) return;
+        const key = `load: [\n${paths.map(path => `   ${path}`).join(",\n")}\n]`
+        console.log(key);
+        //console.time(key);
         Promise.all(paths.map(location => import(location))).then(()=> {
-            this.#doneFetch = true;
-            console.timeEnd("module loaded in");
+            //console.timeEnd(key);
         });
     }
 

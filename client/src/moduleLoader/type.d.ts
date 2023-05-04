@@ -43,8 +43,28 @@ namespace loader {
         const D extends ReadonlyArray<keyof ModuleContainer>
     >(
         dependencies: D,
-        callback: (...arg: modulesByKeys<D>) => void
+        callback?: (...arg: modulesByKeys<D>) => void
     ) => void
+
+    type queueElement = ({
+        type: "require";
+        callback?: (...args: any) => void | Promise<void>;
+    } | {
+        type: "define";
+        name: string;
+        callback: (...args: any) => any | Promise<any>;
+    }) & {
+        dependencies: string[];
+        left: number;
+    }
+
+    type queue = Map<string, Array<queueElement>>
+
+    type config = {
+        paths: {
+            [moduleName: string]: string
+        }
+    }
 }
 
 
