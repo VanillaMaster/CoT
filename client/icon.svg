@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" class="svgClass" height="25vw" width="25vw">
+<svg xmlns="http://www.w3.org/2000/svg" height="48" width="48">
   <rect class="rect-svg" fill="rgb(95,255,205)" height="20%" width="20%" x="0%" y="0%"></rect>
   <rect class="rect-svg" fill="#f2f2f2" height="20%" width="20%" x="20%" y="0%"></rect>
   <rect class="rect-svg" fill="#f2f2f2" height="20%" width="20%" x="40%" y="0%"></rect>
