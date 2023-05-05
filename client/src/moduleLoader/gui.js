@@ -103,12 +103,7 @@ function createLoaderListElement(name, path, checked = false){
 }
 
 
-const buffer = new DocumentFragment();
-for (const [key, value] of config) {
-    buffer.append(createLoaderListElement(key, value, required.has(key)));
-}
-container.replaceChildren(buffer);
-
+container.replaceChildren(...Array.from(config.entries()).map( ([key, value]) => createLoaderListElement(key, value, required.has(key))));
 
 const closeBtn = /**@type { HTMLButtonElement } */ (modal.querySelector("button.close"));
 closeBtn.addEventListener("click", function(e) {
