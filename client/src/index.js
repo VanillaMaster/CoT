@@ -12,7 +12,7 @@ if ('serviceWorker' in navigator) {
 }
 
 
-require(["contextMenuProvider", "modalProvider"], function(contextMenuProvider, modalProvider){
+require(["contextMenuProvider", "modalProvider", "LayoutManaget"], function(contextMenuProvider, modalProvider){
     /**@type { HTMLElement } */
     const grid = document.querySelector(".grid");
     grid.dataset.contextMenu = "main";
@@ -54,7 +54,7 @@ require(["contextMenuProvider", "modalProvider"], function(contextMenuProvider, 
 
 require(["SVGChartProvider"], function(){
     const grid = document.querySelector(".grid");
-    
+    console.log(1);
     const length = 3;
     const widgets = new Array(length);
     for (let i = 0; i < length; i++) {

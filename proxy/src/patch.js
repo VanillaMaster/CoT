@@ -1,7 +1,7 @@
 const fetchOrigin = window.fetch;
 const proxyHost = "127.0.0.1:8080";
 
-const key = "x-host"
+const name = "x-host"
 
 /**
  * @param { RequestInfo | URL } input 
@@ -16,17 +16,17 @@ function fetchProxy(input, init){
         if ("headers" in init) {
             switch (Object.getPrototypeOf(init.headers)) {
                 case Object.prototype:
-                    (/**@type { Object }*/(init.headers))[key] = host;
+                    (/**@type { Object }*/(init.headers))[name] = host;
                     break;
                 case Headers.prototype:
-                    (/**@type { Headers }*/(init.headers)).set(key, host);
+                    (/**@type { Headers }*/(init.headers)).set(name, host);
                     break;
                 default:
                     throw new Error("unexpected headers type");
             }
         } else {
             init.headers = /**@type {HeadersInit} */ ({
-                [key]: host
+                [name]: host
             })
         }
         return fetchOrigin(url, init);

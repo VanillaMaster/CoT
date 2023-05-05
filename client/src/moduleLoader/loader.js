@@ -172,16 +172,17 @@ export class Loader extends EventTarget{
     config = new Loader.config(this);
 
     /**
-     * @param { string[] } paths 
+     * @param { string[] } paths
      */
-    load(...paths) {
+    async load(...paths) {
         if (paths.length <= 0) return;
         const key = `load: [\n${paths.map(path => `   ${path}`).join(",\n")}\n]`
         console.log(key);
         //console.time(key);
-        Promise.all(paths.map(location => import(location))).then(()=> {
-            //console.timeEnd(key);
-        });
+        const resp = await Promise.all(paths.map(
+            location => import(location).then(() => true).catch(() => false)
+        ));
+        return resp;
     }
 
 
