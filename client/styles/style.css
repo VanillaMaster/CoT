@@ -8,6 +8,8 @@
 html {
     height: 100%;
     font-family: 'Open Sans', sans-serif;
+
+    color-scheme: dark;
 }
 
 body {

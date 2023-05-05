@@ -11,8 +11,6 @@ interface Window {
 }
 
 
-
-
 namespace loader {
     type modulesByKeys<const T extends ReadonlyArray<keyof ModuleContainer>> =
         T extends readonly[infer K] ?
@@ -52,6 +50,7 @@ namespace loader {
     } | {
         type: "define";
         name: string;
+        url: string;
         callback: (...args: any) => any | Promise<any>;
     }) & {
         dependencies: string[];
@@ -65,8 +64,38 @@ namespace loader {
             [moduleName: string]: string
         }
     }
-}
 
+    namespace events {
+        type definestart = CustomEvent<{
+            url: string;
+            name: string;
+            dependencies: string[];
+        }>;
+
+        type defineend = CustomEvent<{
+            url: string;
+            name: string;
+            dependencies: string[];
+        }>;
+
+        type requirestart = CustomEvent<{
+            dependencies: string[];
+        }>;
+
+        type requireend = CustomEvent<{
+            dependencies: string[];
+        }>;
+    }
+
+    type eventBinding = {
+        definestart: events.definestart;
+        defineend: events.defineend;
+        
+        requirestart: events.requirestart;
+        requireend: events.requireend;
+    }
+
+}
 
 declare const define: loader.define;
 declare const require: loader.require;

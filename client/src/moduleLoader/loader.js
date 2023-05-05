@@ -1,5 +1,7 @@
-export class Loader {
-    constructor(){}
+export class Loader extends EventTarget{
+    constructor(){
+        super();
+    }
     static #exp = new RegExp(/https?.*?\.js/g);
     static config = class {
         /**@param { Loader } self */
@@ -39,12 +41,21 @@ export class Loader {
      * @param { (...args: any) => void } [callback] 
      */
     require(dependencies, callback) {
-        this.enqueue({
-            type: "require",
-            callback,
-            dependencies,
-            left: dependencies.length
+        const event = new CustomEvent("requirestart", {
+            cancelable: true,
+            detail: {
+                dependencies: [...dependencies]
+            }
         })
+
+        if (this.dispatchEvent(event)) {
+            this.enqueue({
+                type: "require",
+                callback,
+                dependencies,
+                left: dependencies.length
+            })
+        }
     }
     /**
      * @param { string } name 
@@ -56,15 +67,24 @@ export class Loader {
         
         (this.#meta.modules[url] ?? (this.#meta.modules[url] = {modules: [], imported: true})).modules.push(name);
         this.#meta.paths[name] = url;
-
-        console.time(name);
-        this.enqueue({
-            type: "define",
-            name,
-            callback,
-            dependencies,
-            left: dependencies.length,
-        });
+        const event = new CustomEvent("definestart", {
+            cancelable: true,
+            detail: {
+                url: url,
+                name: name,
+                dependencies: [...dependencies]
+            }
+        })
+        if (this.dispatchEvent(event)) {
+            this.enqueue({
+                type: "define",
+                name,
+                url: url,
+                callback,
+                dependencies,
+                left: dependencies.length,
+            });
+        }
     }
 
     /**
@@ -106,10 +126,30 @@ export class Loader {
         const args = element.dependencies.map(name => this.moduleRegistry.get(name));
         if (element.type == "require") {
             element.callback?.apply(window, args);
+            {
+                const event = new CustomEvent("requireend", {
+                    cancelable: false,
+                    detail: {
+                        dependencies: [...element.dependencies]
+                    }
+                })
+                this.dispatchEvent(event);
+            }
         }
         if (element.type == "define") {
             const module = await Promise.resolve(element.callback.apply(window, args));
             this.moduleRegistry.set(element.name, module);
+            {
+                const event = new CustomEvent("defineend", {
+                    cancelable: false,
+                    detail: {
+                        url: element.url,
+                        name: element.name,
+                        dependencies: [...element.dependencies]
+                    }
+                })
+                this.dispatchEvent(event);
+            }
             this.processQueue(element.name);
         }
     }
@@ -144,4 +184,11 @@ export class Loader {
         });
     }
 
+
 }
+
+{
+    const addEventListener = /**@type { <E extends keyof loader.eventBinding>(type: E, callback: (ev: loader.eventBinding[E]) => any, options?: boolean | AddEventListenerOptions) => void } */ (Loader.prototype.addEventListener);
+    Loader.prototype.addEventListener = addEventListener;
+}
+
