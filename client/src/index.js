@@ -1,20 +1,18 @@
 import "./moduleLoader/index.js"
 
-import { translation } from "#lang";
-
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register("./worker.js")
 }
 
 
-require(["contextMenuProvider", "modalProvider", "LayoutManaget"], function(contextMenuProvider, modalProvider){
+require(["contextMenuProvider", "modalProvider", "LayoutManaget", "translator"], function(contextMenuProvider, modalProvider, LayoutManaget, translator){
     /**@type { HTMLElement } */
     const grid = document.querySelector(".grid");
     grid.dataset.contextMenu = "main";
     
     const contextMenu = document.createRange().createContextualFragment(`
         <ul class="context-menu-list">
-            <li><button data-context-action="add">${translation["grid.contextmenu.add"]}</button></li>
+            <li><button data-context-action="add">${translator.translate("grid.contextmenu.add")}</button></li>
         </ul>
     `);
 

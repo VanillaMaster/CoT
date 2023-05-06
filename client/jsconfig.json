@@ -7,8 +7,7 @@
         "module": "ESNext",
         "baseUrl": ".",
         "paths": {
-            "#lang": ["src/lang.js"],
-            "#utilities": ["src/utilities.js"],
+            "#utilities": ["src/utilities.js"]
         }
     },
     "exclude": [

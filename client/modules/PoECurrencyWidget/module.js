@@ -1,16 +1,15 @@
-import { translation } from "#lang";
 import { html } from "#utilities";
 
 import { gen } from "../../tests/gen.js";
 
-define("PoEWidget", ["contextMenuProvider", "widgetProvider"], function(contextMenuProvider, widgetProvider){
+define("PoEWidget", ["contextMenuProvider", "widgetProvider", "translator"], function(contextMenuProvider, widgetProvider, translator){
 
     const chartWidgetContextMenu = document.createRange().createContextualFragment(`
         <ul class="context-menu-list">
-            <li><button data-context-action="edit">${translation["widget.chart.contextmenu.edit"]}</button></li>
-            <li><button data-context-action="delete">${translation["widget.chart.contextmenu.delete"]}</button></li>
+            <li><button data-context-action="edit">${translator.translate("widget.chart.contextmenu.edit")}</button></li>
+            <li><button data-context-action="delete">${translator.translate("widget.chart.contextmenu.delete")}</button></li>
             <hr noshade>
-            <li><button data-context-action="hide">${translation["widget.chart.contextmenu.hide"]}</button></li>
+            <li><button data-context-action="hide">${translator.translate("widget.chart.contextmenu.hide")}</button></li>
         </ul>
     `);
 

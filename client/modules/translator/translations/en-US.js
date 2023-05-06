@@ -1,4 +1,4 @@
-{
+export default {
     "grid.contextmenu.add": "Add",
 
     "widget.chart.contextmenu.edit": "Edit",
