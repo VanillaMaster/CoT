@@ -1,11 +1,6 @@
 import "./moduleLoader/index.js"
 
-import { translation } from "./lang.js";
-
-import "../../proxy/src/patch.js";
-
-import { createChartWidget } from "./widgets/ChartWidget.js";
-import { gen } from "../tests/gen.js";
+import { translation } from "#lang";
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register("./worker.js")
@@ -22,6 +17,10 @@ require(["contextMenuProvider", "modalProvider", "LayoutManaget"], function(cont
             <li><button data-context-action="add">${translation["grid.contextmenu.add"]}</button></li>
         </ul>
     `);
+
+    grid.addEventListener("context:add", function(e) {
+        modalProvider.show("create-widget");
+    })
     
     contextMenuProvider.define("main", contextMenu);
 
@@ -52,16 +51,15 @@ require(["contextMenuProvider", "modalProvider", "LayoutManaget"], function(cont
     
 });
 
-require(["SVGChartProvider"], function(){
-    const grid = document.querySelector(".grid");
-    console.log(1);
-    const length = 3;
-    const widgets = new Array(length);
-    for (let i = 0; i < length; i++) {
-        widgets[i] = createChartWidget(gen());
-    }
-    grid.append(...widgets);
-})
+// require(["SVGChartProvider"], function(){
+//     const grid = document.querySelector(".grid");
+//     const length = 3;
+//     const widgets = new Array(length);
+//     for (let i = 0; i < length; i++) {
+//         widgets[i] = createChartWidget(gen());
+//     }
+//     grid.append(...widgets);
+// })
 
 /*
 

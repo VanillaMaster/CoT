@@ -1,5 +1,7 @@
 import { html } from "#utilities";
 import style from "./style.js";
+import { config, required } from "../persistentStorage.js";
+
 
 const sheet = new CSSStyleSheet();
 sheet.replace(style)
@@ -10,44 +12,6 @@ const KEYS = /**@type {const} */({
     config: "loader:config",
     required: "loader:required"
 })
-
-
-/**@type {Map<(keyof ModuleContainer), string>} */
-export const config = new Map(/**@type { [keyof ModuleContainer, string][] } */(
-    JSON.parse(window.localStorage.getItem(KEYS.config))
-));
-/**@type { Set<(keyof ModuleContainer)> } */
-export const required = new Set(JSON.parse(window.localStorage.getItem(KEYS.required)))
-
-config.set = function(key, value) {
-    const result = Map.prototype.set.call(this, key, value);
-    updateConfig();
-    return result;
-}
-config.delete = function(key) {
-    const result = Map.prototype.delete.call(this, key);
-    updateConfig();
-    return result;
-}
-required.add = function(key) {
-    const result = Set.prototype.add.call(this, key);
-    updateRequired();
-    return result;
-}
-required.delete = function(key) {
-    const result = Set.prototype.delete.call(this, key);
-    updateRequired();
-    return result;
-}
-
-function updateConfig() {
-    const data = JSON.stringify(Array.from(config.entries()));
-    window.localStorage.setItem(KEYS.config, data);
-}
-function updateRequired(){
-    const data = JSON.stringify(Array.from(required.keys()));
-    window.localStorage.setItem(KEYS.required, data);
-}
 
 const template = html`
 <dialog class="loader-config-modal">
@@ -66,10 +30,6 @@ const template = html`
 const modal = /**@type { HTMLDialogElement } */ (template.querySelector("dialog"));
 const container = /**@type { HTMLDivElement } */(modal.querySelector(".content"))
 
-window.addEventListener("beforeunload", (event) => {
-    console.log(event);
-});
-
 /**
  * @param { keyof ModuleContainer } name 
  * @param { string } path 
@@ -79,7 +39,7 @@ function createLoaderListElement(name, path, checked = false){
     const fragment = html`
     <fieldset data-module="${name}">
         <legend>${name}</legend>
-        <div class="url"><span>URL:</span><input type="text" value="${path}"></div>
+        <div class="url"><span>URL:</span><input data-module="${name}" type="text" value="${path}"></div>
         <div class="extra">
             <span>required:</span>
             <input data-module="${name}" type="checkbox" ${checked ? "checked" : ""}>
@@ -99,6 +59,11 @@ function createLoaderListElement(name, path, checked = false){
         const module = /**@type { keyof ModuleContainer } */ (this.dataset.module);
         if (this.checked) { required.add(module) } else { required.delete(module); }
     });
+    const urlInput = /**@type { HTMLInputElement } */ (fragment.querySelector('input[type="text"]'));
+    urlInput.addEventListener("change", function(e) {
+        const module = /**@type { keyof ModuleContainer } */ (this.dataset.module);
+        config.set(module, this.value);
+    })
     return fragment;
 }
 

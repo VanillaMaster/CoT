@@ -1,5 +1,5 @@
 interface ModuleContainer {
-    wc: {
+    widgetProvider: {
         define: (
             name: string,
             elements: DocumentFragment,

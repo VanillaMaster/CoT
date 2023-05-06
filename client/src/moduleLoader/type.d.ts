@@ -46,6 +46,7 @@ namespace loader {
 
     type queueElement = ({
         type: "require";
+        caller: string;
         callback?: (...args: any) => void | Promise<void>;
     } | {
         type: "define";

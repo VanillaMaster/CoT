@@ -1,5 +1,6 @@
 import { Loader } from "./loader.js";
-import { config, required } from "./gui.js";
+import { config, required } from "./persistentStorage.js";
+import "./gui/index.js"
 
 
 Object.defineProperty(window, "app", {

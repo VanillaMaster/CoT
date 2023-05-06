@@ -31,8 +31,8 @@ dialog[data-is="modal"]:before {
     filter: url(#noise);
 }
 dialog[data-is="modal"] > layout-viewport {
-    --border-width: 2px;
-    border: var(--border-width) solid black;
+    --border-width: 3px;
+    border: var(--border-width) solid;
     height: calc(100% - (var(--border-width) * 2));
     width: calc(100% - (var(--border-width) * 2));
 }

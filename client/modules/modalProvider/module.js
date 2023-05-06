@@ -18,10 +18,14 @@ define("modalProvider", [], function(){
             section.dataset.name = name;
             section.append(fragment);
             modal.view.append(section);
+            return section;
         },
         show(name) {
             modal.view.show(name);
             modal.showModal();
+        },
+        close() {
+            modal.close();
         }
     }
 });

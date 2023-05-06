@@ -41,6 +41,8 @@ export class Loader extends EventTarget{
      * @param { (...args: any) => void } [callback] 
      */
     require(dependencies, callback) {
+        const url = (new Error()).stack?.match(Loader.#exp).at(-1);
+
         const event = new CustomEvent("requirestart", {
             cancelable: true,
             detail: {
@@ -52,6 +54,7 @@ export class Loader extends EventTarget{
             this.enqueue({
                 type: "require",
                 callback,
+                caller: url,
                 dependencies,
                 left: dependencies.length
             })
@@ -138,7 +141,7 @@ export class Loader extends EventTarget{
         }
         if (element.type == "define") {
             const module = await Promise.resolve(element.callback.apply(window, args));
-            this.moduleRegistry.set(element.name, module);
+            this.moduleRegistry.set(element.name, module ?? null);
             {
                 const event = new CustomEvent("defineend", {
                     cancelable: false,
@@ -189,6 +192,7 @@ export class Loader extends EventTarget{
 }
 
 {
+    //TODO: find other way
     const addEventListener = /**@type { <E extends keyof loader.eventBinding>(type: E, callback: (ev: loader.eventBinding[E]) => any, options?: boolean | AddEventListenerOptions) => void } */ (Loader.prototype.addEventListener);
     Loader.prototype.addEventListener = addEventListener;
 }

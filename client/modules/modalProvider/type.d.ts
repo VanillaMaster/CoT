@@ -1,7 +1,8 @@
 interface ModuleContainer {
     modalProvider: {
-        define: (name: string, template: DocumentFragment) => void;
+        define: (name: string, template: DocumentFragment) => HTMLElement;
         show: (name: string) => void;
+        close: () => void;
     }
 }
 

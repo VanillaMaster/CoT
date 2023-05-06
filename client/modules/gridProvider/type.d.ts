@@ -5,3 +5,8 @@ interface ModuleContainer {
         Widget: typeof import("./src/widget/component.js").Widget;
     }
 }
+
+namespace CustomComponents {
+    type Grid = import("./src/grid/component.js").Grid;
+    type Widget = import("./src/widget/component.js").Widget;
+}
