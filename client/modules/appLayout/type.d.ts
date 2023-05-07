@@ -1,0 +1,3 @@
+interface ModuleContainer {
+    appLayout: void;
+}

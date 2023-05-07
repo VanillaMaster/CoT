@@ -7,7 +7,7 @@ Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla.
 import { html } from "#utilities";
 import style from "./style.js";
 
-define("widgetProvider", ["modalProvider"], function(modalProvider){
+define("widgetProvider", ["modalProvider", "WidgetGridProvider"], function(modalProvider){
 
     const template = html`
     <div class="create-widget" style="display: flex;flex-direction: column;height: 100%;gap: 1em">

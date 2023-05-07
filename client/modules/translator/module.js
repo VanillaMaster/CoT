@@ -6,7 +6,7 @@ define("translator", [], async function() {
     const { default: translation } = await import(`./translations/${lang}.js`);
     return {
         translate(key) {
-            return translation[key] ?? "";
+            return translation[key] ?? key;
         }
     }
 });

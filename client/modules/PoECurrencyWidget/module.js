@@ -1,8 +1,8 @@
 import { html } from "#utilities";
 
-import { gen } from "../../tests/gen.js";
+import { RequestBalancer } from "./RequestBalancer.js";
 
-define("PoEWidget", ["contextMenuProvider", "widgetProvider", "translator"], function(contextMenuProvider, widgetProvider, translator){
+define("PoEWidget", ["contextMenuProvider", "widgetProvider", "translator", "SVGChartProvider", "fetchProxyPatch"], function(contextMenuProvider, widgetProvider, translator){
 
     const chartWidgetContextMenu = document.createRange().createContextualFragment(`
         <ul class="context-menu-list">
@@ -24,6 +24,26 @@ define("PoEWidget", ["contextMenuProvider", "widgetProvider", "translator"], fun
     }
 
     contextMenuProvider.define("widget", chartWidgetContextMenu);
+
+    const R = new RequestBalancer();
+    const url = new URL("https://www.pathofexile.com/api/trade/exchange/Crucible");
+
+    async function* gen(props){
+        while (true) {
+            const resp = await R.fetch(url, props);
+            const data = await resp.json();
+            const keys = Object.keys(data.result).slice(0, 3);
+            //const [offer1, offfer2, offer3] = data.result;
+            const offers = keys.map(k => data.result[k]);
+            const first = offers[0];
+    
+            const offer = first.listing.offers[0];
+            //console.log(offer);
+            const price = offer.item.amount / offer.exchange.amount;
+            //console.log(data, price);
+            yield price;
+        }
+    }
 
     widgetProvider.define("PoE currency", html`
     <textarea data-name="config" style="
@@ -55,10 +75,19 @@ define("PoEWidget", ["contextMenuProvider", "widgetProvider", "translator"], fun
     }</textarea>
     `,
     (data) => {
+        const props = {
+            method: "POST",
+            body: data.config,
+            headers: {
+                "Content-Type": "application/json",
+                "x-host": "www.pathofexile.com"
+            }
+        }
+
         const widget = chartWidgetTemplate.cloneNode(true);
         /**@type { CustomComponents.SVGChart } */
         const chart = widget.querySelector("svg-chart")
-        chart.setSource(gen());
+        chart.setSource(gen(props));
         chart.start();
     
         const widgetContainer = /**@type { CustomComponents.Widget } */ (widget.querySelector("widget-container"));

@@ -1,4 +1,4 @@
 {
     "liveServer.settings.port": 8189,
-    "typescript.tsserver.experimental.enableProjectDiagnostics": true
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 }

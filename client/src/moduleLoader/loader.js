@@ -1,3 +1,4 @@
+//TODO: rewrite modules usnig import maps
 export class Loader extends EventTarget{
     constructor(){
         super();

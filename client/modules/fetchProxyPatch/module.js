@@ -2,7 +2,7 @@ define("fetchProxyPatch", [], function(){
     const fetchOrigin = window.fetch;
     /**@type {ModuleContainer["fetchProxyPatch"]} */
     const module = {
-        host: "127.0.0.1:8080",
+        host: "127.0.0.1:6969",
         header:  "x-host"
     }
     
