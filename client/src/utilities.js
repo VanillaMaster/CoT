@@ -12,8 +12,7 @@ export function interpolate(template, ...values) {
         buffer[j++] = values[i];
     }
     buffer[j] = template[i];
-    const str = buffer.join("")
-    return str;
+    return buffer.join("");
 }
 
 /**
