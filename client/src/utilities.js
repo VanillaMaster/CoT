@@ -1,7 +1,8 @@
 /**
  * Provide default behavior of string interpolation
  * @param { TemplateStringsArray } template 
- * @param  {...string} values 
+ * @param { ...string } values 
+ * @returns { string }
  */
 export function interpolate(template, ...values) {
     const buffer = new Array(template.length + values.length);
@@ -17,7 +18,8 @@ export function interpolate(template, ...values) {
 
 /**
  * @param { TemplateStringsArray } template 
- * @param  {...string} values 
+ * @param { ...string } values
+ * @returns { DocumentFragment } 
  */
 export function html(template, ...values) {
     return html.range.createContextualFragment(interpolate(template, ...values));
@@ -27,8 +29,10 @@ html.range.selectNode(document.body);
 
 /**
  * @param { TemplateStringsArray } template 
- * @param  {...string} values 
+ * @param { ...string } values
+ * @returns { Promise<CSSStyleSheet> }
  */
 export function css(template, ...values) {
     return new CSSStyleSheet().replace(interpolate(template, ...values));
 }
+
