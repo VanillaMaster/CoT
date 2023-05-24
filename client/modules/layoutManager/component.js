@@ -1,9 +1,8 @@
 import style from "./style.js";
+import { html } from "#utilities";
 
 export class Layout extends HTMLElement {
-    static template = document.createRange().createContextualFragment(
-        `<slot></slot>`
-    );
+    static template = html`<slot></slot>`;
     static style = new CSSStyleSheet();
     static {
         this.style.replace(style);

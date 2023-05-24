@@ -1,16 +1,37 @@
 /**
+ * Provide default behavior of string interpolation
  * @param { TemplateStringsArray } template 
- * @param  {...string} values 
+ * @param { ...string } values 
+ * @returns { string }
+ */
+export function interpolate(template, ...values) {
+    const buffer = new Array(template.length + values.length);
+    let i = 0, j = 0;
+    for (; i < values.length; i++) {
+        buffer[j++] = template[i];
+        buffer[j++] = values[i];
+    }
+    buffer[j] = template[i];
+    return buffer.join("");
+}
+
+/**
+ * @param { TemplateStringsArray } template 
+ * @param { ...string } values
+ * @returns { DocumentFragment } 
  */
 export function html(template, ...values) {
-    const buffer = new Array(template.length + values.length);
-    const templateIter = template[Symbol.iterator]();
-    const valueIter = values[Symbol.iterator]();
-    buffer[0] = templateIter.next().value;
-    for (let i = 1; i < buffer.length; i+= 2) {
-        ({ value: buffer[i]} = valueIter.next());
-        ({ value: buffer[i + 1] } = templateIter.next());
-    }
-    const str = buffer.join("");
-    return (new Range()).createContextualFragment(str);
+    return html.range.createContextualFragment(interpolate(template, ...values));
 }
+html.range = new Range();
+html.range.selectNode(document.body);
+
+/**
+ * @param { TemplateStringsArray } template 
+ * @param { ...string } values
+ * @returns { Promise<CSSStyleSheet> }
+ */
+export function css(template, ...values) {
+    return new CSSStyleSheet().replace(interpolate(template, ...values));
+}
+
