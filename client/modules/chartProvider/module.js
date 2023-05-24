@@ -6,10 +6,14 @@ Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla.
 */
 import { SVGChart } from "./component.js";
 
-define("SVGChartProvider", [], function(a){
-    customElements.define("svg-chart", SVGChart);
+customElements.define("svg-chart", SVGChart);
+
+export { SVGChart };
+
+// define("SVGChartProvider", [], function(a){
+//     customElements.define("svg-chart", SVGChart);
     
-    return {
-        SVGChart: SVGChart
-    }
-})
+//     return {
+//         SVGChart: SVGChart
+//     }
+// })

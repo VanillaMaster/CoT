@@ -5,23 +5,42 @@ Architecto quos voluptates accusantium mollitia odit est ullam cumque dignissimo
 Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla. 
 */
 
+import * as modalProvider from "#modalProvider"
 
-define("moduleLoaderGui", ["modalProvider"], function(modalProvider) {
-    const modal = document.createRange().createContextualFragment(`
-    <ul>
-        <li draggable="true" ondragstart="drag(event)">1</li>
-        <li draggable="true">2</li>
-        <li draggable="true">3</li>
-        <li draggable="true" ondragover="allowDrop(event)">4</li>
-    </ul>
-    `)
-    modalProvider.define("moduleLoader", modal)
-    return {
-        show() {
-            /**@type { CustomComponents.Frame} */
-            modalProvider.show("moduleLoader");
-        },
-        close() {}
-    }
-})
+const modal = document.createRange().createContextualFragment(`
+<ul>
+    <li draggable="true" ondragstart="drag(event)">1</li>
+    <li draggable="true">2</li>
+    <li draggable="true">3</li>
+    <li draggable="true" ondragover="allowDrop(event)">4</li>
+</ul>
+`)
+modalProvider.define("moduleLoader", modal)
+
+export function show() {
+    /**@type { CustomComponents.Frame} */
+    modalProvider.show("moduleLoader");
+}
+export function close() {}
+
+
+
+// define("moduleLoaderGui", ["modalProvider"], function(modalProvider) {
+//     const modal = document.createRange().createContextualFragment(`
+//     <ul>
+//         <li draggable="true" ondragstart="drag(event)">1</li>
+//         <li draggable="true">2</li>
+//         <li draggable="true">3</li>
+//         <li draggable="true" ondragover="allowDrop(event)">4</li>
+//     </ul>
+//     `)
+//     modalProvider.define("moduleLoader", modal)
+//     return {
+//         show() {
+//             /**@type { CustomComponents.Frame} */
+//             modalProvider.show("moduleLoader");
+//         },
+//         close() {}
+//     }
+// })
 

@@ -7,7 +7,20 @@
         "module": "ESNext",
         "baseUrl": ".",
         "paths": {
-            "#utilities": ["src/utilities.js"]
+            "#utilities": ["src/utilities.js"],
+
+            "#modalProvider": ["modules/modalProvider/module.js"],
+            "#contextMenuProvider": ["modules/contextMenuProvider/module.js"],
+            "#WidgetGridProvider": ["modules/gridProvider/module.js"],
+            "#LayoutManaget": ["modules/layoutManager/module.js"],
+            "#SVGChartProvider": ["modules/chartProvider/module.js"],
+            "#moduleLoaderGui": ["modules/moduleLoaderGui/module.js"],
+            "#widgetProvider": ["modules/widgetProvider/module.js"],
+            "#PoEWidget": ["modules/PoEWidget/module.js"],
+            "#fetchProxyPatch": ["modules/fetchProxyPatch/module.js"],
+            "#translator": ["modules/translator/module.js"],
+            "#appLayout": ["modules/appLayout/module.js"],
+            "#UI": ["modules/UI/module.js"]
         }
     },
     "exclude": [

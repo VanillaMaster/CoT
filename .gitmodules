@@ -1,0 +1,3 @@
+[submodule "client/src/ESML"]
+	path = client/src/ESML
+	url = https://github.com/VanillaMaster/ESML.git

@@ -1,5 +1,5 @@
-export default /**@type {const}*/({
+export default {
     "list": [
         "en-US"
     ]
-})
+}

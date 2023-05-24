@@ -33,10 +33,11 @@ export class SVGChart extends HTMLElement {
     }
     disconnectedCallback(){
         SVGChart.observer.unobserve(this);
+        this.stop();
     }
     
     remove(){
-        this.stop();
+        //this.stop();
         super.remove();
     }
 
