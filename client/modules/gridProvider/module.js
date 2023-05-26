@@ -5,10 +5,8 @@ Architecto quos voluptates accusantium mollitia odit est ullam cumque dignissimo
 Quo dolor labore autem quia porro, illum odit necessitatibus provident nulla. 
 */
 
-import { Widget } from "./src/widget/component.js"
-import { Grid } from "./src/grid/component.js"
+export { Widget, Grid } from "./GridJS/index.js"
 
-export { Widget, Grid }
 
 // define("WidgetGridProvider", [], function(){
 //     return {

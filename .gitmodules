@@ -1,3 +1,6 @@
 [submodule "client/src/ESML"]
 	path = client/src/ESML
 	url = https://github.com/VanillaMaster/ESML.git
+[submodule "client/modules/gridProvider/GridJS"]
+	path = client/modules/gridProvider/GridJS
+	url = https://github.com/VanillaMaster/GridJS.git
