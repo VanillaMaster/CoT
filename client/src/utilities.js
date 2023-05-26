@@ -6,15 +6,15 @@
  */
 export function interpolate(template, ...values) {
     const buffer = new Array(template.length + values.length);
-    let i = 0, j = 0;
-    for (; i < values.length; i++) {
+    //let i = 0, j = 0;
+    for (var i = 0, j = 0; i < values.length; i++) {
         buffer[j++] = template[i];
         buffer[j++] = values[i];
     }
     buffer[j] = template[i];
     return buffer.join("");
 }
-
+//asdsq
 /**
  * @param { TemplateStringsArray } template 
  * @param { ...string } values

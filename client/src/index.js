@@ -32,24 +32,44 @@ console.log(loader);
 const dependencies = JSON.parse(window.localStorage.getItem("loader:required"))
 
 
-let done = false;
-let fetch = 0;
-let updated = 0;
-loader.addEventListener("update", function(e){
-    updated++;
-    if (fetch == 0 && done && updated > 0) {
-        const ok = confirm(`${updated} modules ready to updated, changes will be applied automaticly on next reload.\nreload now?`)
-        if (ok) {
-            window.location.reload();
-        }
+let done = false, fetch = 0, updated = 0, updating = 0, id = -1;
+loader.addEventListener("updatestart", function(e){
+    updating++;
+    if (id != -1 ) {
+        clearTimeout(id)
+        id = -1;
     }
+});
+loader.addEventListener("updateend", function(e){
+    updated++;
+    updating--;
+    checkForUpdate();
 });
 loader.addEventListener("fetch", function(e){
     fetch++;
+    if (id != -1 ) {
+        clearTimeout(id)
+        id = -1;
+    }
 });
 loader.addEventListener("fetchend", function(e){
     fetch--;
+    checkForUpdate();
 });
 
-const modules = await Promise.all(dependencies.map( dependency => loader.import(`#${dependency}`)));
-done = true;
+Promise.all(dependencies.map( dependency => loader.import(`#${dependency}`))).then(()=>{
+    done = true;
+    checkForUpdate();
+})
+
+
+function checkForUpdate() {
+    if (fetch == 0 && updating == 0 && done && updated > 0) {
+        id = setTimeout(() => {
+            const ok = confirm(`${updated} modules ready to updated, changes will be applied automaticly on next reload.\nreload now?`)
+            if (ok) {
+                window.location.reload();
+            }
+        }, 1000);
+    }
+}

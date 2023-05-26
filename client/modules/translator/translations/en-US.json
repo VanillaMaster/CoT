@@ -3,5 +3,14 @@
 
     "widget.chart.contextmenu.edit": "Edit",
     "widget.chart.contextmenu.delete": "Delete",
-    "widget.chart.contextmenu.hide": "Hide"
+    "widget.chart.contextmenu.hide": "Hide",
+
+    "settings.language.lable": "Language",
+    "settings.language.option.en-US": "english",
+    
+    "settings.cache.lable": "Cache",
+    "settings.cache.strategy.lable": "strategy",
+    "settings.cache.strategy.cftr": "cache first, then revalidate",
+    "settings.cache.strategy.cinc": "cache if nothing change",
+    "settings.cache.strategy.nc": "never cache"
 }

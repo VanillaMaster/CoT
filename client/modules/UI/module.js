@@ -43,14 +43,32 @@ popupBtn.addEventListener("click", (e)=>{
 
 sideBarBottom.append(settingsBtn)
 sideBarTop.append(homeBtn, popupBtn);
-
+//a
 const fragment = html`
     <section style="--padding: 0px" data-name="widget-grid">
         <widget-grid cell-size="100" class="grid" data-context-menu="main"></widget-grid>
     </section>
     <section data-name="settings">
         <div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae rerum atque accusantium tenetur magnam asperiores odio. Quam sint, rem, eaque suscipit perferendis, voluptatem ad eum vitae quisquam maiores provident magnam.
+            <h3>${translator.translate("settings.language.lable")}:</h3>
+            <lable>
+                <select>
+                    <option>${translator.translate("settings.language.option.en-US")}</option>
+                </select>
+            </lable>
+            <section style="display:flex;flex-direction: column;align-items: flex-start;gap: .5em;">
+                <h3>${translator.translate("settings.cache.lable")}:</h3>
+                <lable>
+                <span>strategy: <span>
+                <select>
+                <option>${translator.translate("settings.cache.strategy.cftr")}</option>
+                <option>${translator.translate("settings.cache.strategy.cinc")}</option>
+                <option>${translator.translate("settings.cache.strategy.nc")}</option>
+                </select>
+                </lable>
+                <button>delete modules cache</button>
+                <button>update modules cache</button>
+            </section>
         </div>
     </section>
 `;
