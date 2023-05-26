@@ -78,6 +78,51 @@ export function define(name, html, callback) {
     settingsView.append(section);
 }
 
+{
+
+    const chartWidgetTemplate = document.createRange().createContextualFragment(`
+        <widget-container data-context-menu="widget">
+            <svg-chart style="position: absolute; inset: 4px; background-color: #333;"></svg-chart>
+        </widget-container>
+    `);
+
+    function ondelete(e) {
+        this.remove();
+    }
+
+    function timeout(timeout) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, timeout);
+        })
+    }
+    async function* gen__() {
+        const values = [10, 0, 15, 100, 7, 40, 3, 11, 12, 12, 20, 8, 4, 3];
+        while (true) {
+            for (const value of values) {
+                const T = timeout(750);
+                yield value
+                await T;
+            };
+        }
+    }
+    
+    define("test", html``,
+    (data) => {
+    
+        const widget = chartWidgetTemplate.cloneNode(true);
+        /**@type { CustomComponents.SVGChart } */
+        const chart = widget.querySelector("svg-chart")
+        chart.setSource(gen__());
+        chart.start();
+    
+        const widgetContainer = /**@type { CustomComponents.Widget } */ (widget.querySelector("widget-container"));
+    
+        widgetContainer.addEventListener("context:delete", ondelete);
+        return widgetContainer;
+    });
+    
+}
+
 // define("widgetProvider", ["modalProvider", "WidgetGridProvider"], function(modalProvider){
 
 //     const template = html`
