@@ -6,8 +6,19 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register("./worker.js")
 }
 
-const loader = await Loader.new();
 
+const loader = await Loader.new();
+//**@type {typeof window["app"]} */
+const app = {
+    loader: loader,
+}
+
+Object.defineProperty(window, "app", {
+    value: app,
+    configurable: false,
+    enumerable: false,
+    writable: false
+})
 
 const importmap = {
     imports: [
