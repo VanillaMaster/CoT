@@ -40,6 +40,13 @@ function createLoaderListElement(name, path, checked = false){
     <fieldset data-module="${name}">
         <legend>${name}</legend>
         <div class="url"><span>URL:</span><input data-module="${name}" type="text" value="${path}"></div>
+        <div class="scope" style="display: flex;gap: 1em;align-items: center;">
+            <span>scopes:</span>
+            <span style="padding: .25em .75em;border-radius: .75em;border: 1px solid #e1e1e1;">
+                global
+            </span>
+            <button class="add" style="margin-left: auto;">+</button>
+        </div>
         <div class="extra">
             <span>required:</span>
             <input data-module="${name}" type="checkbox" ${checked ? "checked" : ""}>

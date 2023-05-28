@@ -1,4 +1,4 @@
-//import "./moduleLoader/index.js"
+import "./moduleLoader/index.js"
 
 import { Loader } from "./ESML/index.js";
 
